@@ -2,7 +2,11 @@ import Groq from 'groq-sdk'
 import { ProtoSpec, PageSpec } from './types'
 import { randomUUID } from 'crypto'
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+let _groq: Groq | null = null
+function getGroq(): Groq {
+  if (!_groq) _groq = new Groq({ apiKey: process.env.GROQ_API_KEY! })
+  return _groq
+}
 
 // ─── Design archetypes — picked per category so each proto looks distinct ────
 const DESIGN_ARCHETYPES: Record<string, {
@@ -211,7 +215,7 @@ Generate a complete 5-page website prototype spec. Return ONLY valid JSON, no ma
 
 Make all copy specific to the idea "${idea}". Do not use placeholder [ProductName] — use the actual name. Every item should be relevant to this specific product.`
 
-  const response = await groq.chat.completions.create({
+  const response = await getGroq().chat.completions.create({
     model: 'llama-3.3-70b-versatile',
     messages: [{ role: 'user', content: prompt }],
     max_tokens: 3000,
