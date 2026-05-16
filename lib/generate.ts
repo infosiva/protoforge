@@ -1,0 +1,237 @@
+import Groq from 'groq-sdk'
+import { ProtoSpec, PageSpec } from './types'
+import { randomUUID } from 'crypto'
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+
+// ─── Design archetypes — picked per category so each proto looks distinct ────
+const DESIGN_ARCHETYPES: Record<string, {
+  heroStyle: 'centered' | 'split-left' | 'split-right' | 'fullbleed' | 'magazine'
+  colorPersonality: string
+  navStyle: 'minimal' | 'full' | 'sidebar'
+  cardStyle: 'grid' | 'masonry' | 'list' | 'carousel'
+  spacing: 'tight' | 'comfortable' | 'generous'
+  referenceStyle: string
+}> = {
+  marketplace:  { heroStyle: 'split-left',   colorPersonality: 'warm amber',    navStyle: 'full',    cardStyle: 'masonry',  spacing: 'comfortable', referenceStyle: 'Airbnb' },
+  saas:         { heroStyle: 'centered',      colorPersonality: 'deep indigo',   navStyle: 'minimal', cardStyle: 'grid',     spacing: 'generous',    referenceStyle: 'Linear' },
+  ecommerce:    { heroStyle: 'fullbleed',     colorPersonality: 'bold red',      navStyle: 'full',    cardStyle: 'grid',     spacing: 'tight',       referenceStyle: 'Shopify' },
+  fintech:      { heroStyle: 'split-right',   colorPersonality: 'dark emerald',  navStyle: 'minimal', cardStyle: 'list',     spacing: 'comfortable', referenceStyle: 'Stripe' },
+  health:       { heroStyle: 'centered',      colorPersonality: 'soft teal',     navStyle: 'minimal', cardStyle: 'grid',     spacing: 'generous',    referenceStyle: 'Calm' },
+  education:    { heroStyle: 'magazine',      colorPersonality: 'vibrant violet', navStyle: 'full',   cardStyle: 'grid',     spacing: 'comfortable', referenceStyle: 'Duolingo' },
+  food:         { heroStyle: 'fullbleed',     colorPersonality: 'warm orange',   navStyle: 'minimal', cardStyle: 'masonry',  spacing: 'comfortable', referenceStyle: 'Deliveroo' },
+  travel:       { heroStyle: 'fullbleed',     colorPersonality: 'sky blue gold', navStyle: 'minimal', cardStyle: 'masonry',  spacing: 'generous',    referenceStyle: 'Airbnb' },
+  productivity: { heroStyle: 'split-left',    colorPersonality: 'slate purple',  navStyle: 'minimal', cardStyle: 'list',     spacing: 'tight',       referenceStyle: 'Notion' },
+  social:       { heroStyle: 'centered',      colorPersonality: 'bright pink',   navStyle: 'full',    cardStyle: 'masonry',  spacing: 'comfortable', referenceStyle: 'Pinterest' },
+}
+
+function detectCategory(idea: string): string {
+  const i = idea.toLowerCase()
+  if (/marketplace|connect|hire|book|find.*provider/i.test(i)) return 'marketplace'
+  if (/saas|software|platform|tool|dashboard/i.test(i)) return 'saas'
+  if (/shop|sell|store|buy|ecomm/i.test(i)) return 'ecommerce'
+  if (/finance|invest|money|bank|pay|crypto/i.test(i)) return 'fintech'
+  if (/health|fitness|workout|medic|wellness/i.test(i)) return 'health'
+  if (/learn|course|tutor|school|educat/i.test(i)) return 'education'
+  if (/food|recipe|meal|restaurant|delivery|cook/i.test(i)) return 'food'
+  if (/travel|trip|hotel|flight|holiday/i.test(i)) return 'travel'
+  if (/productivity|task|project|note|organiz/i.test(i)) return 'productivity'
+  if (/social|community|network|chat|forum/i.test(i)) return 'social'
+  return 'saas'
+}
+
+export async function generateProto(idea: string): Promise<ProtoSpec> {
+  const category = detectCategory(idea)
+  const archetype = DESIGN_ARCHETYPES[category]
+
+  const prompt = `You are a product designer and copywriter creating a prototype specification.
+
+The client idea: "${idea}"
+
+Design archetype to follow: ${archetype.referenceStyle} style
+- Hero layout: ${archetype.heroStyle}
+- Color personality: ${archetype.colorPersonality}
+- Card style: ${archetype.cardStyle}
+- Spacing: ${archetype.spacing} whitespace
+- Reference: inspired by ${archetype.referenceStyle} but unique
+
+Generate a complete 5-page website prototype spec. Return ONLY valid JSON, no markdown:
+
+{
+  "name": "Product name (catchy, 1-2 words)",
+  "tagline": "One powerful line, max 10 words",
+  "primaryColor": "#hexcode matching the ${archetype.colorPersonality} personality",
+  "accentColor": "#hexcode complementary accent",
+  "audience": "Who this is for (one sentence)",
+  "pages": [
+    {
+      "slug": "home",
+      "title": "Home",
+      "headline": "Bold hero headline, max 8 words",
+      "subheadline": "Supporting sentence, max 20 words",
+      "ctaText": "CTA button text",
+      "ctaHref": "/signup",
+      "sections": [
+        {
+          "type": "hero",
+          "headline": "same as page headline",
+          "body": "same as subheadline",
+          "items": []
+        },
+        {
+          "type": "features",
+          "headline": "Why [ProductName]?",
+          "body": "Short intro sentence",
+          "items": [
+            {"icon": "🎯", "title": "Feature 1", "body": "Description"},
+            {"icon": "⚡", "title": "Feature 2", "body": "Description"},
+            {"icon": "🔒", "title": "Feature 3", "body": "Description"}
+          ]
+        },
+        {
+          "type": "stats",
+          "headline": "Trusted by thousands",
+          "body": "",
+          "items": [
+            {"icon": "📊", "title": "10,000+", "body": "Happy users"},
+            {"icon": "⭐", "title": "4.9/5", "body": "Average rating"},
+            {"icon": "🚀", "title": "60s", "body": "Time to get started"}
+          ]
+        },
+        {
+          "type": "cta-band",
+          "headline": "Ready to get started?",
+          "body": "Join thousands already using [ProductName].",
+          "items": []
+        }
+      ]
+    },
+    {
+      "slug": "how-it-works",
+      "title": "How It Works",
+      "headline": "Up and running in 3 steps",
+      "subheadline": "No technical knowledge needed.",
+      "ctaText": "Get started free",
+      "ctaHref": "/signup",
+      "sections": [
+        {
+          "type": "how-it-works",
+          "headline": "Simple. Fast. Effective.",
+          "body": "Three steps to [outcome]",
+          "items": [
+            {"icon": "1️⃣", "title": "Step 1 title", "body": "What happens"},
+            {"icon": "2️⃣", "title": "Step 2 title", "body": "What happens"},
+            {"icon": "3️⃣", "title": "Step 3 title", "body": "What happens"}
+          ]
+        },
+        {
+          "type": "faq",
+          "headline": "Frequently asked questions",
+          "body": "",
+          "items": [
+            {"icon": "❓", "title": "Question 1?", "body": "Answer 1"},
+            {"icon": "❓", "title": "Question 2?", "body": "Answer 2"},
+            {"icon": "❓", "title": "Question 3?", "body": "Answer 3"}
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "pricing",
+      "title": "Pricing",
+      "headline": "Simple, transparent pricing",
+      "subheadline": "Start free. Upgrade when ready.",
+      "ctaText": "Start for free",
+      "ctaHref": "/signup",
+      "sections": [
+        {
+          "type": "pricing",
+          "headline": "Choose your plan",
+          "body": "All plans include a 14-day free trial",
+          "items": [
+            {"icon": "🌱", "title": "Free", "price": "$0/mo", "body": "Feature 1, Feature 2, Feature 3"},
+            {"icon": "🚀", "title": "Pro", "price": "$19/mo", "body": "Everything in Free, plus Feature 4, Feature 5"},
+            {"icon": "🏢", "title": "Business", "price": "$49/mo", "body": "Everything in Pro, plus Feature 6, Priority support"}
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "about",
+      "title": "About",
+      "headline": "Built by people who understand the problem",
+      "subheadline": "Our story and mission.",
+      "ctaText": "Join us",
+      "ctaHref": "/signup",
+      "sections": [
+        {
+          "type": "features",
+          "headline": "Our mission",
+          "body": "What drives the team to build this product. Why it matters.",
+          "items": [
+            {"icon": "💡", "title": "Our vision", "body": "What we're working towards"},
+            {"icon": "🤝", "title": "Our values", "body": "How we operate"},
+            {"icon": "🌍", "title": "Our impact", "body": "What change we want to make"}
+          ]
+        },
+        {
+          "type": "testimonials",
+          "headline": "What our users say",
+          "body": "",
+          "items": [
+            {"icon": "⭐", "title": "User Name, Role", "body": "Testimonial quote about the product"},
+            {"icon": "⭐", "title": "User Name, Role", "body": "Testimonial quote about the product"},
+            {"icon": "⭐", "title": "User Name, Role", "body": "Testimonial quote about the product"}
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "contact",
+      "title": "Contact",
+      "headline": "Let's talk",
+      "subheadline": "We respond within 24 hours.",
+      "ctaText": "Send message",
+      "ctaHref": "#contact-form",
+      "sections": [
+        {
+          "type": "features",
+          "headline": "Get in touch",
+          "body": "Multiple ways to reach us",
+          "items": [
+            {"icon": "📧", "title": "Email", "body": "hello@product.com"},
+            {"icon": "💬", "title": "Live chat", "body": "Available Mon-Fri 9am-6pm"},
+            {"icon": "📞", "title": "Phone", "body": "+1 (555) 000-0000"}
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+Make all copy specific to the idea "${idea}". Do not use placeholder [ProductName] — use the actual name. Every item should be relevant to this specific product.`
+
+  const response = await groq.chat.completions.create({
+    model: 'llama-3.3-70b-versatile',
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 3000,
+    temperature: 0.7,
+  })
+
+  const content = response.choices[0]?.message?.content ?? '{}'
+  const clean = content.replace(/```json\n?|\n?```/g, '').trim()
+  const parsed = JSON.parse(clean)
+
+  return {
+    id: randomUUID().split('-')[0],
+    idea,
+    name: parsed.name,
+    tagline: parsed.tagline,
+    primaryColor: parsed.primaryColor,
+    accentColor: parsed.accentColor,
+    category,
+    audience: parsed.audience,
+    pages: parsed.pages,
+    createdAt: new Date().toISOString(),
+  }
+}
