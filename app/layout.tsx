@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import FloatingChatWrapper from '@/components/FloatingChatWrapper'
 
 export const metadata: Metadata = {
   title: "ProtoForge — Idea to prototype in seconds",

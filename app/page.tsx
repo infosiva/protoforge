@@ -1,6 +1,15 @@
 'use client'
+import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+const STEPS = [
+  'Analysing your idea…',
+  'Picking design archetype…',
+  'Generating copy and layout…',
+  'Saving prototype…',
+  'Done!',
+]
 
 const EXAMPLES = [
   'A marketplace for freelance dog trainers',
@@ -15,6 +24,7 @@ export default function Home() {
   const router = useRouter()
   const [idea, setIdea] = useState('')
   const [loading, setLoading] = useState(false)
+  const [activeStep, setActiveStep] = useState(-1)
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -22,23 +32,55 @@ export default function Home() {
     if (!idea.trim() || loading) return
     setLoading(true)
     setError('')
+    setActiveStep(0)
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idea }),
       })
-      const data = await res.json()
-      if (data.error) throw new Error(data.error)
-      router.push(`/proto/${data.id}`)
+      if (!res.body) throw new Error('No stream')
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buf = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buf += decoder.decode(value, { stream: true })
+        const lines = buf.split('\n\n')
+        buf = lines.pop() ?? ''
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          const data = JSON.parse(line.slice(6))
+          if (data.error) throw new Error(data.error)
+          if (typeof data.step === 'number') setActiveStep(data.step)
+          if (data.id) { router.push(`/proto/${data.id}`); return }
+        }
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Something went wrong')
       setLoading(false)
+      setActiveStep(-1)
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+      {/* Animated blob bg */}
+      <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }} aria-hidden>
+        <motion.div
+          style={{ position: 'absolute', top: '-15%', left: '-8%', width: 600, height: 600, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)', filter: 'blur(80px)' }}
+          animate={{ x: [0, 40, 0], y: [0, -20, 0], scale: [1, 1.08, 1] }}
+          transition={{ duration: 14, ease: 'easeInOut', repeat: Infinity }}
+        />
+        <motion.div
+          style={{ position: 'absolute', bottom: '-10%', right: '-6%', width: 500, height: 500, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.10) 0%, transparent 70%)', filter: 'blur(90px)' }}
+          animate={{ x: [0, -25, 0], y: [0, 20, 0], scale: [1, 1.06, 1] }}
+          transition={{ duration: 18, ease: 'easeInOut', repeat: Infinity, delay: 2 }}
+        />
+      </div>
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-5 border-b border-white/10">
         <span className="font-black text-lg tracking-tight">
@@ -67,7 +109,8 @@ export default function Home() {
               onChange={e => setIdea(e.target.value)}
               placeholder={'Describe your idea… e.g. "A marketplace for local fitness trainers"'}
               rows={3}
-              className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/30 resize-none focus:outline-none focus:border-indigo-500 transition text-base"
+              disabled={loading}
+              className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/30 resize-none focus:outline-none focus:border-indigo-500 transition text-base disabled:opacity-50"
             />
             {error && <p className="text-red-400 text-sm">{error}</p>}
             <button
@@ -81,12 +124,41 @@ export default function Home() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                   </svg>
-                  Generating your prototype…
+                  Building…
                 </span>
               ) : (
                 'Generate prototype →'
               )}
             </button>
+            {loading && (
+              <div className="mt-2 flex flex-col gap-2">
+                {STEPS.map((label, i) => {
+                  const done = i < activeStep
+                  const active = i === activeStep
+                  return (
+                    <div key={i} className="flex items-center gap-3 text-sm">
+                      <span className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+                        {done ? (
+                          <svg className="w-5 h-5 text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        ) : active ? (
+                          <svg className="animate-spin w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                          </svg>
+                        ) : (
+                          <span className="w-2 h-2 rounded-full bg-white/20 mx-auto block" />
+                        )}
+                      </span>
+                      <span className={done ? 'text-emerald-400' : active ? 'text-white' : 'text-white/30'}>
+                        {label}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </form>
 
           <div className="mt-8">
