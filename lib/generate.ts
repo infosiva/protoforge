@@ -8,6 +8,18 @@ function getGroq(): Groq {
   return _groq
 }
 
+// Simple in-memory cache keyed by normalised idea string (TTL: 1 hour)
+const _cache = new Map<string, { spec: ProtoSpec; expires: number }>()
+function cacheKey(idea: string) { return idea.toLowerCase().trim().replace(/\s+/g, ' ') }
+function fromCache(idea: string): ProtoSpec | null {
+  const entry = _cache.get(cacheKey(idea))
+  if (!entry || Date.now() > entry.expires) return null
+  return entry.spec
+}
+function toCache(idea: string, spec: ProtoSpec) {
+  _cache.set(cacheKey(idea), { spec, expires: Date.now() + 3600_000 })
+}
+
 // ─── Design archetypes — picked per category so each proto looks distinct ────
 const DESIGN_ARCHETYPES: Record<string, {
   heroStyle: 'centered' | 'split-left' | 'split-right' | 'fullbleed' | 'magazine'
@@ -45,6 +57,9 @@ function detectCategory(idea: string): string {
 }
 
 export async function generateProto(idea: string): Promise<ProtoSpec> {
+  const cached = fromCache(idea)
+  if (cached) return { ...cached, id: randomUUID().split('-')[0], createdAt: new Date().toISOString() }
+
   const category = detectCategory(idea)
   const archetype = DESIGN_ARCHETYPES[category]
 
@@ -226,7 +241,7 @@ Make all copy specific to the idea "${idea}". Do not use placeholder [ProductNam
   const clean = content.replace(/```json\n?|\n?```/g, '').trim()
   const parsed = JSON.parse(clean)
 
-  return {
+  const spec: ProtoSpec = {
     id: randomUUID().split('-')[0],
     idea,
     name: parsed.name,
@@ -238,4 +253,6 @@ Make all copy specific to the idea "${idea}". Do not use placeholder [ProductNam
     pages: parsed.pages,
     createdAt: new Date().toISOString(),
   }
+  toCache(idea, spec)
+  return spec
 }

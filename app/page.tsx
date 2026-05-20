@@ -1,6 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 const STEPS = [
@@ -21,6 +21,8 @@ const EXAMPLES = [
 ]
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const router = useRouter()
   const [idea, setIdea] = useState('')
   const [loading, setLoading] = useState(false)
