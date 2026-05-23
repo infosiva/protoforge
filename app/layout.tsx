@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import FloatingChatWrapper from '@/components/FloatingChatWrapper'
+import BackToTop from '@/components/BackToTop'
 
 export const metadata: Metadata = {
   title: "ProtoForge — Idea to prototype in seconds",
@@ -27,7 +28,7 @@ export default function RootLayout({
       <head>
         <script src="https://cdn.tailwindcss.com" async />
       </head>
-      <body>{children}</body>
+      <body>{children}<BackToTop accentColor="#f97316" /></body>
     </html>
   );
 }
