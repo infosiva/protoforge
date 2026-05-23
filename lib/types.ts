@@ -27,9 +27,18 @@ export interface ItemSpec {
   price?: string
 }
 
+export interface TokenStats {
+  compressionTokens: number
+  mainTokens: number
+  savedTokens: number
+  savingsPct: number
+}
+
 export interface ProtoSpec {
   id: string
   idea: string
+  productDNA?: string
+  tokenStats?: TokenStats
   name: string          // product name
   tagline: string
   primaryColor: string  // hex

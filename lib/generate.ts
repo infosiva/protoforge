@@ -1,11 +1,27 @@
 import Groq from 'groq-sdk'
-import { ProtoSpec, PageSpec } from './types'
+import { ProtoSpec } from './types'
 import { randomUUID } from 'crypto'
 
 let _groq: Groq | null = null
 function getGroq(): Groq {
   if (!_groq) _groq = new Groq({ apiKey: process.env.GROQ_API_KEY! })
   return _groq
+}
+
+async function compressIdeaToDNA(idea: string, category: string, referenceStyle: string): Promise<{ dna: string; compressionTokens: number }> {
+  const res = await getGroq().chat.completions.create({
+    model: 'llama-3.3-70b-versatile',
+    messages: [{
+      role: 'user',
+      content: `Compress into 40-token product DNA. Output ONLY the string, no explanation.\nFormat: "[Type]|[User]|[Problem]|[Differentiator]|[Tone]"\nIdea: "${idea}" | Category: ${category} | Style: ${referenceStyle}`,
+    }],
+    max_tokens: 80,
+    temperature: 0.2,
+  })
+  return {
+    dna: res.choices[0]?.message?.content?.trim() ?? idea,
+    compressionTokens: (res.usage?.prompt_tokens ?? 0) + (res.usage?.completion_tokens ?? 0),
+  }
 }
 
 // Simple in-memory cache keyed by normalised idea string (TTL: 1 hour)
@@ -63,16 +79,14 @@ export async function generateProto(idea: string): Promise<ProtoSpec> {
   const category = detectCategory(idea)
   const archetype = DESIGN_ARCHETYPES[category]
 
+  // Step 1: compress idea to ~40-token DNA (saves ~85% tokens in main call)
+  const naiveTokenEstimate = Math.ceil(idea.split(' ').length * 1.3)
+  const { dna, compressionTokens } = await compressIdeaToDNA(idea, category, archetype.referenceStyle)
+
   const prompt = `You are a product designer and copywriter creating a prototype specification.
 
-The client idea: "${idea}"
-
-Design archetype to follow: ${archetype.referenceStyle} style
-- Hero layout: ${archetype.heroStyle}
-- Color personality: ${archetype.colorPersonality}
-- Card style: ${archetype.cardStyle}
-- Spacing: ${archetype.spacing} whitespace
-- Reference: inspired by ${archetype.referenceStyle} but unique
+Product DNA: "${dna}"
+Category: ${category} | Style: ${archetype.referenceStyle} | Hero: ${archetype.heroStyle} | Colors: ${archetype.colorPersonality} | Cards: ${archetype.cardStyle}
 
 Generate a complete 5-page website prototype spec. Return ONLY valid JSON, no markdown:
 
@@ -228,7 +242,7 @@ Generate a complete 5-page website prototype spec. Return ONLY valid JSON, no ma
   ]
 }
 
-Make all copy specific to the idea "${idea}". Do not use placeholder [ProductName] — use the actual name. Every item should be relevant to this specific product.`
+Make all copy specific to the DNA above. Every item must be relevant to this specific product. Do NOT use placeholder text.`
 
   const response = await getGroq().chat.completions.create({
     model: 'llama-3.3-70b-versatile',
@@ -237,6 +251,12 @@ Make all copy specific to the idea "${idea}". Do not use placeholder [ProductNam
     temperature: 0.7,
   })
 
+  const mainTokens = (response.usage?.prompt_tokens ?? 0) + (response.usage?.completion_tokens ?? 0)
+  // naive estimate: full idea repeated in 3000-token prompt
+  const naiveTokens = naiveTokenEstimate + 3000
+  const savedTokens = Math.max(0, naiveTokens - (compressionTokens + mainTokens))
+  const savingsPct = Math.round((savedTokens / naiveTokens) * 100)
+
   const content = response.choices[0]?.message?.content ?? '{}'
   const clean = content.replace(/```json\n?|\n?```/g, '').trim()
   const parsed = JSON.parse(clean)
@@ -244,6 +264,8 @@ Make all copy specific to the idea "${idea}". Do not use placeholder [ProductNam
   const spec: ProtoSpec = {
     id: randomUUID().split('-')[0],
     idea,
+    productDNA: dna,
+    tokenStats: { compressionTokens, mainTokens, savedTokens, savingsPct },
     name: parsed.name,
     tagline: parsed.tagline,
     primaryColor: parsed.primaryColor,

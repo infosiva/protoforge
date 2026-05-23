@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { ProtoSpec, PageSpec, SectionSpec, ItemSpec } from '@/lib/types'
 import Watermark from '@/components/Watermark'
@@ -580,6 +580,11 @@ export default function ProtoViewer() {
   const [activeSlug, setActiveSlug] = useState('home')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([])
+  const [chatInput, setChatInput] = useState('')
+  const [chatLoading, setChatLoading] = useState(false)
+  const chatEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetch(`/api/proto/${id}`)
@@ -616,31 +621,94 @@ export default function ProtoViewer() {
   const navIsTransparent = theme.heroLayout === 'fullbleed-photo' && activeSlug === 'home'
 
   return (
-    <div style={{ minHeight: '100vh', background: theme.bg, color: theme.text, fontFamily: theme.fontStyle }}>
+    <div style={{ minHeight: '100vh', background: theme.bg, color: theme.text, fontFamily: theme.fontStyle, position: 'relative', overflowX: 'hidden' }}>
+      {/* Animated ambient gradient blobs — unique per prototype's color palette */}
+      <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+        <div style={{
+          position: 'absolute', width: 600, height: 600, borderRadius: '50%',
+          background: `radial-gradient(circle, ${primary}22 0%, transparent 70%)`,
+          top: '-10%', left: '-5%',
+          animation: 'blob1 18s ease-in-out infinite',
+        }}/>
+        <div style={{
+          position: 'absolute', width: 500, height: 500, borderRadius: '50%',
+          background: `radial-gradient(circle, ${spec.accentColor}18 0%, transparent 70%)`,
+          bottom: '5%', right: '-8%',
+          animation: 'blob2 22s ease-in-out infinite',
+        }}/>
+        <div style={{
+          position: 'absolute', width: 350, height: 350, borderRadius: '50%',
+          background: `radial-gradient(circle, ${primary}12 0%, transparent 70%)`,
+          top: '45%', left: '40%',
+          animation: 'blob3 28s ease-in-out infinite',
+        }}/>
+      </div>
+      <style>{`
+        @keyframes blob1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,40px) scale(1.08)} 66%{transform:translate(-30px,60px) scale(0.95)} }
+        @keyframes blob2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-50px,-40px) scale(1.06)} 66%{transform:translate(40px,-60px) scale(0.97)} }
+        @keyframes blob3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-40px,30px) scale(1.12)} }
+        @media (prefers-reduced-motion: reduce) { [style*="blob"] { animation: none !important; } }
+      `}</style>
       <Watermark />
 
       {/* ProtoForge top bar */}
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 20px',
+        padding: '8px 20px', gap: 8,
         background: 'rgba(10,10,18,0.92)', backdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(255,255,255,0.08)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <a href="/" style={{ fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>PROTOFORGE</a>
-          <span style={{ color: 'rgba(255,255,255,0.2)' }}>›</span>
-          <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#fff' }}>{spec.name}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          {/* Logo mark */}
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', flexShrink: 0 }}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect width="20" height="20" rx="5" fill={primary} opacity="0.9"/>
+              <path d="M5 6h6M5 10h4M5 14h8" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/>
+              <circle cx="15" cy="6" r="2" fill="#fff" opacity="0.7"/>
+            </svg>
+            <span style={{ fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.45)' }}>PROTOFORGE</span>
+          </a>
+          <span style={{ color: 'rgba(255,255,255,0.2)', flexShrink: 0 }}>›</span>
+          <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</span>
           <span style={{
-            marginLeft: 6, fontSize: '0.65rem', padding: '2px 8px',
+            flexShrink: 0, fontSize: '0.6rem', padding: '2px 7px',
             borderRadius: 100, border: '1px solid rgba(251,191,36,0.4)',
             color: 'rgba(251,191,36,0.8)', fontWeight: 700, letterSpacing: '0.1em',
           }}>PROTOTYPE</span>
+          {spec.tokenStats && (
+            <span title={`Compression: ${spec.tokenStats.compressionTokens} tokens | Main: ${spec.tokenStats.mainTokens} tokens | Saved: ${spec.tokenStats.savedTokens}`} style={{
+              flexShrink: 0, fontSize: '0.6rem', padding: '2px 7px',
+              borderRadius: 100, background: 'rgba(96,96,255,0.15)',
+              border: '1px solid rgba(96,96,255,0.35)',
+              color: 'rgba(180,180,255,0.9)', fontWeight: 700, cursor: 'default',
+            }}>⚡ {spec.tokenStats.savingsPct}% fewer tokens</span>
+          )}
         </div>
-        <a href="/#generate" style={{
-          fontSize: '0.75rem', fontWeight: 700, padding: '6px 16px',
-          borderRadius: 100, background: primary, color: '#fff', textDecoration: 'none',
-        }}>Build yours free →</a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+          <a href={`/api/proto/${id}/llms`} download="llms.txt" style={{
+            fontSize: '0.68rem', fontWeight: 600, padding: '5px 10px',
+            borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)',
+            color: 'rgba(255,255,255,0.6)', textDecoration: 'none',
+            transition: 'all 0.15s',
+          }} onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.35)'; (e.target as HTMLElement).style.color = '#fff' }}
+             onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.6)' }}>
+            llms.txt
+          </a>
+          <a href={`/api/proto/${id}/mcp`} download="mcp.json" style={{
+            fontSize: '0.68rem', fontWeight: 600, padding: '5px 10px',
+            borderRadius: 100, border: '1px solid rgba(255,255,255,0.15)',
+            color: 'rgba(255,255,255,0.6)', textDecoration: 'none',
+            transition: 'all 0.15s',
+          }} onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.35)'; (e.target as HTMLElement).style.color = '#fff' }}
+             onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.6)' }}>
+            MCP tool
+          </a>
+          <a href="/#generate" style={{
+            fontSize: '0.75rem', fontWeight: 700, padding: '6px 14px',
+            borderRadius: 100, background: primary, color: '#fff', textDecoration: 'none',
+          }}>Build yours →</a>
+        </div>
       </div>
 
       {/* Product nav */}
@@ -672,7 +740,7 @@ export default function ProtoViewer() {
       </nav>
 
       {/* Content */}
-      <div style={{ paddingTop: 84 }}>
+      <div style={{ paddingTop: 84, position: 'relative', zIndex: 1 }}>
         {activePage && (
           <>
             {activeSlug === 'home' ? (
@@ -698,12 +766,144 @@ export default function ProtoViewer() {
       <div style={{
         borderTop: `1px solid ${theme.border}`, padding: '32px',
         textAlign: 'center', fontSize: '0.8rem', color: theme.muted,
+        position: 'relative', zIndex: 1,
       }}>
         <p>Prototype generated by <strong>ProtoForge</strong> · Not a real product</p>
         <a href="/" style={{ color: primary, textDecoration: 'none', marginTop: 4, display: 'inline-block' }}>
           Create your own →
         </a>
       </div>
+
+      {/* Floating product chatbot */}
+      <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000 }}>
+        {chatOpen && (
+          <div style={{
+            width: 340, height: 460, marginBottom: 12,
+            background: 'rgba(14,14,22,0.97)', backdropFilter: 'blur(20px)',
+            border: `1px solid ${primary}40`, borderRadius: 16,
+            display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            boxShadow: `0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px ${primary}20`,
+          }}>
+            {/* Chat header */}
+            <div style={{
+              padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10,
+              borderBottom: `1px solid rgba(255,255,255,0.07)`,
+              background: `linear-gradient(135deg, ${primary}18, transparent)`,
+            }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: 10, background: primary,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', flexShrink: 0,
+              }}>🤖</div>
+              <div>
+                <p style={{ margin: 0, fontWeight: 700, fontSize: '0.85rem', color: '#fff' }}>{spec.name} AI</p>
+                <p style={{ margin: 0, fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)' }}>Powered by ProtoForge</p>
+              </div>
+              <button onClick={() => setChatOpen(false)} style={{
+                marginLeft: 'auto', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)',
+                cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1,
+              }}>×</button>
+            </div>
+            {/* Messages */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {chatMessages.length === 0 && (
+                <div style={{
+                  margin: 'auto', textAlign: 'center', color: 'rgba(255,255,255,0.3)',
+                  fontSize: '0.78rem', padding: '0 16px',
+                }}>
+                  <p style={{ margin: '0 0 6px' }}>👋 Hi! Ask me anything about {spec.name}.</p>
+                  <p style={{ margin: 0, fontSize: '0.7rem' }}>{spec.tagline}</p>
+                </div>
+              )}
+              {chatMessages.map((m, i) => (
+                <div key={i} style={{
+                  alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+                  maxWidth: '85%',
+                  padding: '8px 12px', borderRadius: m.role === 'user' ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
+                  background: m.role === 'user' ? primary : 'rgba(255,255,255,0.08)',
+                  color: '#fff', fontSize: '0.8rem', lineHeight: 1.5,
+                }}>{m.content}</div>
+              ))}
+              {chatLoading && (
+                <div style={{
+                  alignSelf: 'flex-start', padding: '8px 12px', borderRadius: '12px 12px 12px 4px',
+                  background: 'rgba(255,255,255,0.08)', display: 'flex', gap: 4,
+                }}>
+                  {[0,1,2].map(d => (
+                    <span key={d} style={{
+                      width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.4)',
+                      display: 'inline-block', animation: `chatdot 1.2s ${d * 0.2}s ease-in-out infinite`,
+                    }}/>
+                  ))}
+                </div>
+              )}
+              <div ref={chatEndRef}/>
+            </div>
+            {/* Input */}
+            <form onSubmit={async e => {
+              e.preventDefault()
+              const text = chatInput.trim()
+              if (!text || chatLoading) return
+              const msgs = [...chatMessages, { role: 'user' as const, content: text }]
+              setChatMessages(msgs)
+              setChatInput('')
+              setChatLoading(true)
+              try {
+                const systemPrompt = `You are the AI assistant for ${spec.name}. ${spec.tagline}. Target audience: ${spec.audience}. Product idea: ${spec.idea}. Answer questions helpfully and concisely, staying in character as a product expert.`
+                const res = await fetch('/api/chat', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ messages: msgs.map(m => ({ role: m.role, content: m.content })), system: systemPrompt }),
+                })
+                const data = await res.json()
+                setChatMessages([...msgs, { role: 'assistant', content: data.text ?? 'Sorry, something went wrong.' }])
+              } catch {
+                setChatMessages([...msgs, { role: 'assistant', content: 'Connection error. Try again.' }])
+              } finally {
+                setChatLoading(false)
+                setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
+              }
+            }} style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', gap: 8 }}>
+              <input
+                value={chatInput}
+                onChange={e => setChatInput(e.target.value)}
+                placeholder={`Ask about ${spec.name}…`}
+                style={{
+                  flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: 8, padding: '8px 12px', color: '#fff', fontSize: '0.8rem', outline: 'none',
+                }}
+              />
+              <button type="submit" disabled={chatLoading} style={{
+                padding: '8px 12px', borderRadius: 8, border: 'none',
+                background: primary, color: '#fff', cursor: 'pointer', fontWeight: 700, fontSize: '0.8rem',
+                opacity: chatLoading ? 0.5 : 1,
+              }}>↑</button>
+            </form>
+          </div>
+        )}
+        {/* Toggle button */}
+        <button onClick={() => setChatOpen(v => !v)} style={{
+          width: 52, height: 52, borderRadius: '50%', border: 'none',
+          background: `linear-gradient(135deg, ${primary}, ${spec.accentColor})`,
+          color: '#fff', fontSize: '1.3rem', cursor: 'pointer',
+          boxShadow: `0 4px 24px ${primary}60`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'transform 0.15s cubic-bezier(0.23,1,0.32,1)',
+        }} onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.08)')}
+           onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}>
+          {chatOpen ? '×' : '💬'}
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes chatdot {
+          0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+          40% { opacity: 1; transform: translateY(-4px); }
+        }
+        @keyframes gradientShift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+      `}</style>
     </div>
   )
 }
