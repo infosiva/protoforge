@@ -1,8 +1,11 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { ProtoSpec, PageSpec, SectionSpec, ItemSpec } from '@/lib/types'
 import Watermark from '@/components/Watermark'
+import { loadHistory, saveToHistory } from '@/components/ProjectsDashboard'
+
+type ViewTab = 'preview' | 'code' | 'export'
 
 // ── Per-category visual identity ─────────────────────────────────────────────
 // Each category gets a completely different world: light vs dark, font, nav,
@@ -586,15 +589,31 @@ export default function ProtoViewer() {
   const [chatLoading, setChatLoading] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
+  // Tab switcher state
+  const [activeTab, setActiveTab] = useState<ViewTab>('preview')
+  const [codeCopied, setCodeCopied] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [buildHistory, setBuildHistory] = useState<ReturnType<typeof loadHistory>>([])
+
   useEffect(() => {
     fetch(`/api/proto/${id}`)
       .then(r => r.json())
       .then(data => {
         if (data.error) { setError(data.error); return }
         setSpec(data)
+        // save to history when viewed
+        saveToHistory({
+          id: data.id,
+          name: data.name,
+          category: data.category,
+          createdAt: data.createdAt,
+          prompt: data.idea ?? '',
+        })
       })
       .catch(() => setError('Failed to load prototype'))
       .finally(() => setLoading(false))
+    // load build history
+    setBuildHistory(loadHistory())
   }, [id])
 
   const theme: Theme = spec ? (THEMES[spec.category] ?? THEMES.saas) : THEMES.saas
@@ -704,6 +723,86 @@ export default function ProtoViewer() {
              onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.6)' }}>
             MCP tool
           </a>
+          {buildHistory.length > 0 && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setHistoryOpen(v => !v)}
+                style={{
+                  fontSize: '0.68rem', fontWeight: 600, padding: '5px 10px',
+                  borderRadius: 100,
+                  border: `1px solid ${historyOpen ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.15)'}`,
+                  background: historyOpen ? 'rgba(99,102,241,0.12)' : 'transparent',
+                  color: historyOpen ? '#a5b4fc' : 'rgba(255,255,255,0.6)',
+                  cursor: 'pointer', transition: 'all 0.15s',
+                }}
+              >
+                History ({buildHistory.length})
+              </button>
+              {historyOpen && (
+                <div style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: 8,
+                  width: 280, maxHeight: 320, overflowY: 'auto',
+                  background: 'rgba(10,10,18,0.97)', backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
+                  boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
+                  zIndex: 200,
+                }}>
+                  <div style={{
+                    padding: '10px 14px',
+                    borderBottom: '1px solid rgba(255,255,255,0.07)',
+                    fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em',
+                    color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase',
+                  }}>
+                    Build History
+                  </div>
+                  <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {buildHistory.map(h => (
+                      <a
+                        key={h.id}
+                        href={`/proto/${h.id}`}
+                        style={{
+                          display: 'flex', flexDirection: 'column', gap: 2,
+                          padding: '8px 10px', borderRadius: 8,
+                          background: h.id === id ? 'rgba(99,102,241,0.12)' : 'transparent',
+                          border: `1px solid ${h.id === id ? 'rgba(99,102,241,0.25)' : 'transparent'}`,
+                          textDecoration: 'none', transition: 'background 0.12s',
+                        }}
+                        onMouseEnter={e => { if (h.id !== id) e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                        onMouseLeave={e => { if (h.id !== id) e.currentTarget.style.background = 'transparent' }}
+                      >
+                        <div style={{
+                          fontSize: '0.78rem', fontWeight: 600,
+                          color: h.id === id ? '#a5b4fc' : '#f4f4f5',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {h.name}
+                          {h.id === id && <span style={{ marginLeft: 6, fontSize: '0.6rem', color: '#a5b4fc' }}>← current</span>}
+                        </div>
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                          <span style={{
+                            fontSize: '0.6rem', fontWeight: 700, padding: '1px 6px',
+                            borderRadius: 99, background: 'rgba(255,255,255,0.07)',
+                            color: 'rgba(255,255,255,0.4)',
+                          }}>{h.category}</span>
+                          <span style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)' }}>
+                            {new Date(h.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                          </span>
+                          {h.prompt && (
+                            <span style={{
+                              fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)',
+                              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
+                            }}>
+                              · {h.prompt.slice(0, 40)}{h.prompt.length > 40 ? '…' : ''}
+                            </span>
+                          )}
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           <a href="/#generate" style={{
             fontSize: '0.75rem', fontWeight: 700, padding: '6px 14px',
             borderRadius: 100, background: primary, color: '#fff', textDecoration: 'none',

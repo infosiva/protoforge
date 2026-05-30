@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import type { ContentOverrides } from '@/lib/content'
 import { useRouter } from 'next/navigation'
+import ProjectsDashboard, { saveToHistory } from '@/components/ProjectsDashboard'
 
 const GEN_STEPS = [
   'Analysing your idea…',
@@ -263,7 +264,18 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
           const data = JSON.parse(line.slice(6))
           if (data.error) throw new Error(data.error)
           if (typeof data.step === 'number') setActiveStep(data.step)
-          if (data.id) { router.push(`/proto/${data.id}`); return }
+          if (data.id) {
+            // save to local history before navigating
+            saveToHistory({
+              id: data.id,
+              name: data.name ?? idea.trim().split(' ').slice(0, 3).join(' '),
+              category: data.category ?? 'general',
+              createdAt: new Date().toISOString(),
+              prompt: idea.trim(),
+            })
+            router.push(`/proto/${data.id}`)
+            return
+          }
         }
       }
     } catch (e: unknown) {
@@ -303,10 +315,10 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
         <div style={{
           maxWidth: 1100,
           margin: '0 auto',
-          padding: '64px 24px 48px',
+          padding: '28px 24px 32px',
           display: 'grid',
           gridTemplateColumns: 'minmax(0,1fr)',
-          gap: 48,
+          gap: 32,
           alignItems: 'center',
         }}
           className="lg-grid-2"
@@ -318,7 +330,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
             transition={{ duration: 0.5, ease: [0.23,1,0.32,1] }}
           >
             {/* Logo mark + wordmark */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
               <div style={{
                 width: 40, height: 40, borderRadius: 11,
                 background: 'linear-gradient(135deg, #6366f1, #818cf8)',
@@ -351,51 +363,51 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
               background: 'rgba(99,102,241,0.1)',
               border: '1px solid rgba(99,102,241,0.25)',
               color: '#a5b4fc',
-              marginBottom: 20,
+              marginBottom: 12,
             }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#6366f1', display: 'inline-block', animation: 'pulse 2s ease-in-out infinite' }} />
               FREE · NO SIGNUP · AI-NATIVE
             </div>
 
             <h1 style={{
-              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+              fontSize: 'clamp(1.7rem, 4vw, 2.8rem)',
               fontWeight: 900,
               lineHeight: 1.1,
               letterSpacing: '-0.03em',
               color: '#f4f4f5',
-              marginBottom: 16,
+              marginBottom: 10,
             }}>
               {overrides.headline ?? (
-                <>Idea to{' '}
+                <>Prototype + AI{' '}
                 <span style={{
                   background: 'linear-gradient(135deg, #818cf8, #6366f1)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
-                  prototype
+                  scaffolding,
                 </span>
-                {' '}+ AI tools</>
+                {' '}instantly.</>
               )}
             </h1>
 
             <p style={{
-              fontSize: 17,
+              fontSize: 15,
               color: 'rgba(255,255,255,0.5)',
-              lineHeight: 1.65,
-              marginBottom: 28,
+              lineHeight: 1.6,
+              marginBottom: 16,
               maxWidth: 500,
             }}>
-              {overrides.subheadline ?? <>Describe what you want to build. Get a branded 5-page prototype with real copy, colors, layout — plus <strong style={{ color: 'rgba(255,255,255,0.75)' }}>llms.txt, MCP tool stubs</strong>, and a built-in AI assistant. Built for AI builders.</>}
+              {overrides.subheadline ?? <>Describe your idea. Get a 5-page prototype with real copy, colors, layout — plus <strong style={{ color: 'rgba(255,255,255,0.75)' }}>llms.txt and MCP tool stubs</strong> ready to hand to any AI builder. No login required.</>}
             </p>
 
             {/* Feature pills */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 32 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
               {[
-                { label: '5-page prototype', color: 'rgba(255,255,255,0.55)' },
-                { label: 'llms.txt export', color: '#6ee7b7' },
-                { label: 'MCP tool stubs', color: '#fcd34d' },
-                { label: '⚡ 85% fewer tokens', color: '#a5b4fc' },
-                { label: 'Built-in AI chat', color: '#f9a8d4' },
+                { label: '⚡ Instant', color: '#a5b4fc' },
+                { label: '🎨 Beautiful', color: '#f9a8d4' },
+                { label: '📱 Mobile-first', color: '#6ee7b7' },
+                { label: '🤖 AI-powered', color: '#fcd34d' },
+                { label: '⚡ 85% fewer tokens', color: 'rgba(255,255,255,0.45)' },
               ].map(feat => (
                 <span key={feat.label} style={{
                   fontSize: 11,
@@ -432,11 +444,13 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 }}
               />
               {error && <p style={{ color: '#f87171', fontSize: 13 }}>{error}</p>}
-              <button
+              <motion.button
                 type="submit"
                 disabled={loading || !idea.trim()}
                 className="btn-primary"
                 style={{ padding: '14px 24px', fontSize: 15, width: '100%' }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.12, ease: [0.23, 1, 0.32, 1] }}
               >
                 {loading ? (
                   <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
@@ -449,7 +463,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 ) : (
                   'Generate prototype →'
                 )}
-              </button>
+              </motion.button>
 
               {loading && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
@@ -483,11 +497,11 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
             </form>
 
             {/* Examples */}
-            <div style={{ marginTop: 20 }}>
-              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 10 }}>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 8 }}>
                 Try an example
               </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {EXAMPLES.map(ex => (
                   <button
                     key={ex}
@@ -517,6 +531,9 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 ))}
               </div>
             </div>
+
+            {/* Projects dashboard — reads localStorage */}
+            <ProjectsDashboard />
           </motion.div>
 
           {/* Right: animated demo panel */}
@@ -567,6 +584,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 className="glass"
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(99,102,241,0.18)' }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08, ease: [0.23,1,0.32,1] }}
                 style={{ borderRadius: 16, padding: '20px 18px' }}
@@ -611,6 +629,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 className="glass"
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -2, boxShadow: `0 8px 32px ${f.badgeColor}28` }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08, ease: [0.23,1,0.32,1] }}
                 style={{ borderRadius: 16, padding: '20px 18px', borderColor: `${f.badgeColor}22` }}
