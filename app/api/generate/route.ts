@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       send({ step: 3, label: 'Saving prototype…' })
       saveProto(spec)
 
-      send({ step: 4, label: 'Done!', id: spec.id })
+      send({ step: 4, label: 'Done!', id: spec.id, name: spec.name, category: spec.category })
     } catch (e) {
       send({ error: e instanceof Error ? e.message : 'Generation failed' })
     } finally {

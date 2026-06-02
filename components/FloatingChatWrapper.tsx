@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 export default function FloatingChatWrapper() {
   const [open, setOpen] = useState(false)
   const [msgs, setMsgs] = useState<{ role: 'user' | 'bot'; text: string }[]>([
-    { role: 'bot', text: "Hi! Describe your product idea and I'll help you prototype it 🔧" },
+    { role: 'bot', text: "I'm ProtoForge AI. Tell me what you're building and I'll help you spec it, name it, or understand your prototype. What's the idea?" },
   ])
   const [input, setInput] = useState('')
 
@@ -31,7 +31,7 @@ export default function FloatingChatWrapper() {
     <>
       <motion.button
         onClick={() => setOpen(o => !o)}
-        whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.93 }}
         style={{ position: 'fixed', bottom: 24, right: 24, width: 52, height: 52, borderRadius: '50%',
           background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',

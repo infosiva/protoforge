@@ -352,37 +352,34 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
             </div>
 
             <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: '0.06em',
-              padding: '4px 12px',
-              borderRadius: 99,
-              background: 'rgba(99,102,241,0.1)',
-              border: '1px solid rgba(99,102,241,0.25)',
-              color: '#a5b4fc',
-              marginBottom: 12,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontSize: 11, fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase',
+              padding: '6px 16px', borderRadius: 9999,
+              background: 'rgba(255,255,255,0.04)',
+              backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.09)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)',
+              color: 'rgba(165,180,252,0.82)',
+              marginBottom: 16,
             }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#6366f1', display: 'inline-block', animation: 'pulse 2s ease-in-out infinite' }} />
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#818cf8', display: 'inline-block', flexShrink: 0, boxShadow: '0 0 8px #818cf8' }} />
               FREE · NO SIGNUP · AI-NATIVE
             </div>
 
             <h1 style={{
-              fontSize: 'clamp(1.7rem, 4vw, 2.8rem)',
+              fontSize: 'clamp(2.25rem, 4.5vw, 3.5rem)',
               fontWeight: 900,
-              lineHeight: 1.1,
-              letterSpacing: '-0.03em',
+              lineHeight: 0.97,
+              letterSpacing: '-0.04em',
               color: '#f4f4f5',
-              marginBottom: 10,
+              marginBottom: 14,
             }}>
               {overrides.headline ?? (
                 <>Prototype + AI{' '}
                 <span style={{
-                  background: 'linear-gradient(135deg, #818cf8, #6366f1)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
+                  background: 'linear-gradient(135deg, #a5b4fc, #818cf8, #6366f1)',
+                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                  filter: 'drop-shadow(0 0 28px rgba(99,102,241,0.50))',
                 }}>
                   scaffolding,
                 </span>
