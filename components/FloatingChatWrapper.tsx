@@ -33,7 +33,7 @@ export default function FloatingChatWrapper() {
         onClick={() => setOpen(o => !o)}
         whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.93 }}
         style={{ position: 'fixed', bottom: 24, right: 24, width: 52, height: 52, borderRadius: '50%',
-          background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', cursor: 'pointer',
+          background: 'linear-gradient(135deg,#7c3aed,#9333ea)', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 4px 20px rgba(99,102,241,0.3)', zIndex: 1000, fontSize: 20 }}
       >
@@ -70,7 +70,7 @@ export default function FloatingChatWrapper() {
                 style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(99,102,241,0.3)',
                   borderRadius: 8, padding: '6px 10px', fontSize: 12, color: '#f8fafc', outline: 'none' }} />
               <button onClick={send}
-                style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: '#fff', cursor: 'pointer' }}>→</button>
+                style={{ background: 'linear-gradient(135deg,#7c3aed,#9333ea)', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: '#fff', cursor: 'pointer' }}>→</button>
             </div>
           </motion.div>
         )}

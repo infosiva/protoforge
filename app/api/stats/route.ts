@@ -9,7 +9,8 @@ export async function GET() {
     if (!res.ok) return Response.json({ visitors: null }, { status: 200 })
     const data = await res.json()
     return Response.json(data)
-  } catch {
+  } catch (e) {
+    console.error('[protoforge][stats]', e)
     return Response.json({ visitors: null }, { status: 200 })
   }
 }

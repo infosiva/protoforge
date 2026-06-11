@@ -45,19 +45,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full antialiased">
-        {/* Aurora blobs */}
-        <div className="aurora aurora-primary" aria-hidden />
-        <div className="aurora aurora-secondary" aria-hidden />
-        <div className="aurora aurora-third" aria-hidden />
-        <div className="grain" aria-hidden />
-
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Navbar />
           {children}
         </div>
 
         <FloatingChatWrapper />
-        <BackToTop accentColor="#6366f1" />
+        <BackToTop accentColor="#7c3aed" />
         <Script defer data-site="protofast.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
       </body>
     </html>

@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
       max_tokens: 500,
     })
     return NextResponse.json({ text: res.choices[0]?.message?.content ?? 'Tell me about your product idea!' })
-  } catch {
+  } catch (e) {
+    console.error('[protoforge][chat]', e)
     return NextResponse.json({ text: 'Start prototyping your idea above!' }, { status: 200 })
   }
 }

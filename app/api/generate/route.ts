@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
 
       send({ step: 4, label: 'Done!', id: spec.id, name: spec.name, category: spec.category })
     } catch (e) {
+      console.error('[protoforge][generate]', e)
       send({ error: e instanceof Error ? e.message : 'Generation failed' })
     } finally {
       writer.close()
