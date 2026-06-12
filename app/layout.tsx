@@ -4,6 +4,7 @@ import FloatingChatWrapper from '@/components/FloatingChatWrapper'
 import BackToTop from '@/components/BackToTop'
 import Navbar from '@/components/Navbar'
 import Script from 'next/script'
+import { ThemeLoader } from '@/lib/theme-loader-client'
 
 export const metadata: Metadata = {
   title: "ProtoForge — Idea to Prototype in Seconds | AI Prototype Generator",
@@ -45,6 +46,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full antialiased">
+        <ThemeLoader />
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Navbar />
           {children}
