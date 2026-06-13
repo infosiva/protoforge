@@ -30,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <head>
+        <meta name="google-adsense-account" content="ca-pub-4237294630161176" />
         <Script
           id="structured-data"
           type="application/ld+json"
