@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import FloatingChatWrapper from '@/components/FloatingChatWrapper'
+import FeedbackWidget from '@/components/FeedbackWidget'
 import BackToTop from '@/components/BackToTop'
 import Navbar from '@/components/Navbar'
 import Script from 'next/script'
@@ -54,6 +55,7 @@ export default function RootLayout({
         </div>
 
         <FloatingChatWrapper />
+        <FeedbackWidget siteName="ProtoForge" accentColor="#7c3aed" accentColor2="#6d28d9" position="left" />
         <BackToTop accentColor="#7c3aed" />
         <Script defer data-site="protofast.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
       </body>
