@@ -703,6 +703,14 @@ export default function ProtoViewer() {
               color: 'rgba(180,180,255,0.9)', fontWeight: 700, cursor: 'default',
             }}>⚡ {spec.tokenStats.savingsPct}% fewer tokens</span>
           )}
+          {spec.layoutId && (
+            <span title={`§Z6 mandatory pipeline (always applied, never skipped): ${spec.openDesignSkill ?? ''}${spec.pipelineSkills?.length ? ', ' + spec.pipelineSkills.join(', ') : ''}`} style={{
+              flexShrink: 0, fontSize: '0.6rem', padding: '2px 7px',
+              borderRadius: 100, background: `${spec.accentColor}1f`,
+              border: `1px solid ${spec.accentColor}59`,
+              color: spec.accentColor, fontWeight: 700, cursor: 'default',
+            }}>🎨 {spec.layoutId} · {spec.pipelineSkills?.length ?? 0} skills</span>
+          )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
           <a href={`/api/proto/${id}/llms`} download="llms.txt" style={{

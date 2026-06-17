@@ -17,6 +17,11 @@ export interface LayoutArchetype {
   description: string
 }
 
+// §Z6 mandatory pipeline — runs on EVERY archetype regardless of category.
+// ui-ux-pro-max = quality/spacing/hierarchy pass. 21st-registry = pull polished
+// components instead of hand-rolling buttons/cards/forms. emil-design-eng = taste/polish.
+export const MANDATORY_PIPELINE_SKILLS = ['/ui-ux-pro-max', '/21st-registry', '/emil-design-eng'] as const
+
 export const LAYOUT_ARCHETYPES: LayoutArchetype[] = [
   {
     id: 'T1',
@@ -145,7 +150,7 @@ export const LAYOUT_ARCHETYPES: LayoutArchetype[] = [
     heroPattern: 'fullbleed',
     demoPanel: 'Video reel preview with parallax scroll effect',
     openDesignSkill: '/after-hours-editorial-template',
-    extraSkills: ['/gsap-scrolltrigger', '/fal-kling-o3', '/shader-dev'],
+    extraSkills: ['/gsap-scrolltrigger', '/fal-kling-o3', '/shader-dev', '/remotion', '/remotion-best-practices'],
     projects: ['clipforge', 'nammatamil', 'pixelforge'],
     description: 'Near-black bg, fuchsia accent, parallax cinematic hero',
   },
@@ -327,6 +332,10 @@ export function suggestLayout(input: string): LayoutSuggestion {
 
   const reasoning = `Detected category: ${category}. ${primary.name} (${primary.id}) matches because: ${primary.description}.`
 
+  // §Z6 mandatory pipeline: every archetype must run ui-ux-pro-max + 21st-registry
+  // + emil-design-eng on top of its own openDesignSkill + extraSkills — no exceptions.
+  const allSkills = [...new Set([...primary.extraSkills, ...MANDATORY_PIPELINE_SKILLS])]
+
   const openDesignPrompt = `Invoke ${primary.openDesignSkill} with these parameters:
 - Product: "${input}"
 - Category: ${category}
@@ -334,8 +343,8 @@ export function suggestLayout(input: string): LayoutSuggestion {
 - Accent: ${primary.accent}
 - Hero pattern: ${primary.heroPattern}
 - Demo panel: ${primary.demoPanel}
-${primary.extraSkills.length ? `- Then apply: ${primary.extraSkills.join(', ')}` : ''}
-After generation, run /emil-design-eng for polish pass, then /animate for motion.`
+- Then apply (§Z6 mandatory pipeline): ${allSkills.join(', ')}
+After generation, run /fixing-accessibility + /fixing-metadata for final audit.`
 
   return { primary, alternatives, category, reasoning, openDesignPrompt }
 }

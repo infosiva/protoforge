@@ -1,7 +1,7 @@
 import Groq from 'groq-sdk'
 import { ProtoSpec } from './types'
 import { randomUUID } from 'crypto'
-import { suggestLayout } from './layoutSystem'
+import { suggestLayout, MANDATORY_PIPELINE_SKILLS } from './layoutSystem'
 
 let _groq: Groq | null = null
 function getGroq(): Groq {
@@ -280,6 +280,7 @@ Make all copy specific to the DNA above. Every item must be relevant to this spe
     layoutId: layoutArchetype.id,
     layoutName: layoutArchetype.name,
     openDesignSkill: layoutArchetype.openDesignSkill,
+    pipelineSkills: [...new Set([...layoutArchetype.extraSkills, ...MANDATORY_PIPELINE_SKILLS])],
     audience: parsed.audience,
     pages: parsed.pages,
     createdAt: new Date().toISOString(),

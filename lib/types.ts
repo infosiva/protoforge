@@ -47,6 +47,7 @@ export interface ProtoSpec {
   layoutId?: string     // 'T1' … 'T17'
   layoutName?: string
   openDesignSkill?: string
+  pipelineSkills?: string[]   // §Z6 mandatory — ui-ux-pro-max, 21st-registry, emil-design-eng + archetype extras, always present, never skipped
   audience: string
   pages: PageSpec[]
   createdAt: string
