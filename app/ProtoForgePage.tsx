@@ -98,31 +98,31 @@ const PROTO_FRAMES = [
 ]
 
 const HOW_STEPS = [
-  { num: '1', label: 'Describe', desc: 'One sentence is enough. Category is detected automatically.' },
-  { num: '2', label: 'AI Compresses', desc: 'Idea compressed to 40-token DNA — 85%+ fewer tokens before the main call.' },
+  { num: '1', label: 'Describe', desc: 'One sentence is enough — ProtoForge detects the type of product automatically.' },
+  { num: '2', label: 'AI Compresses', desc: 'Idea distilled to its core before generation — the AI focuses on what matters, not filler.' },
   { num: '3', label: 'Prototype ready', desc: 'Five branded pages with real copy, colors, and layout in seconds.' },
-  { num: '4', label: 'AI-Ready', desc: 'Every prototype ships with llms.txt + MCP stubs for any agent workflow.' },
+  { num: '4', label: 'Agent-ready export', desc: 'Download an AI context file + tool definitions — drop them into Claude, Cursor, or any agent to instantly brief it on your product.' },
 ]
 
 const AI_FEATURES = [
   {
     icon: '⚡',
-    label: 'Prompt DNA Compression',
-    desc: 'Your idea is compressed to a 40-token DNA before the main LLM call — 85%+ fewer tokens, visible savings on every prototype.',
+    label: 'Smarter AI generation',
+    desc: 'Your idea is distilled to its core before generation — the AI focuses on what matters, not filler. Faster results, more relevant copy.',
     badge: 'Unique',
     badgeColor: '#7c3aed',
   },
   {
     icon: '📄',
-    label: 'llms.txt Export',
+    label: 'AI context export',
     desc: 'Every prototype gets a structured AI-readable context file. Drop it into Claude, GPT, or Cursor and they instantly understand your product.',
     badge: 'AI-native',
     badgeColor: '#0284c7',
   },
   {
     icon: '🔧',
-    label: 'MCP Tool Stubs',
-    desc: "Export a ready-made MCP server definition. Any agent can call your prototype's pages as structured tools — no code needed.",
+    label: 'Agent tool definitions',
+    desc: "Export ready-made tool definitions. Any agent can call your prototype's pages as structured tools — no code needed.",
     badge: 'Agent-ready',
     badgeColor: '#ea580c',
   },
@@ -138,29 +138,38 @@ const AI_FEATURES = [
 function DemoPanel() {
   const [idx, setIdx] = useState(0)
   const [prevIdx, setPrevIdx] = useState<number | null>(null)
+  const [paused, setPaused] = useState(false)
 
   useEffect(() => {
+    if (paused) return
     const t = setInterval(() => {
       setPrevIdx(idx)
       setIdx(i => (i + 1) % PROTO_FRAMES.length)
     }, 3400)
     return () => clearInterval(t)
-  }, [idx])
+  }, [idx, paused])
 
   const frame = PROTO_FRAMES[idx]
 
   return (
-    <div className="demo-screen" style={{ overflow: 'hidden' }}>
+    <div
+      className="demo-screen"
+      style={{ overflow: 'hidden' }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
       {/* Browser chrome */}
       <div style={{
         background: '#f3f4f6',
         borderBottom: '1px solid rgba(0,0,0,0.07)',
-        padding: '9px 14px',
+        padding: '8px 16px',
         display: 'flex',
         alignItems: 'center',
         gap: 8,
       }}>
-        <div style={{ display: 'flex', gap: 5 }}>
+        <div style={{ display: 'flex', gap: 4 }}>
           {['#ff5f57','#ffbd2e','#28ca41'].map(c => (
             <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, opacity: 0.75 }} />
           ))}
@@ -168,10 +177,10 @@ function DemoPanel() {
         <div style={{
           flex: 1,
           fontSize: 10,
-          color: 'rgba(0,0,0,0.35)',
+          color: 'rgba(0,0,0,0.45)',
           background: '#fff',
           borderRadius: 6,
-          padding: '3px 10px',
+          padding: '4px 8px',
           fontFamily: 'monospace',
           border: '1px solid rgba(0,0,0,0.09)',
         }}>
@@ -198,14 +207,14 @@ function DemoPanel() {
             style={{ display: 'flex', alignItems: 'center', gap: 14 }}
           >
             <div style={{
-              width: 22, height: 22, borderRadius: 6,
+              width: 24, height: 24, borderRadius: 6,
               background: frame.accent,
               flexShrink: 0,
             }} />
             <div style={{ display: 'flex', gap: 10 }}>
               {frame.nav.map((item, i) => (
                 <div key={item} style={{
-                  fontSize: 9,
+                  fontSize: 10,
                   fontWeight: i === 0 ? 700 : 500,
                   color: i === 0 ? frame.accent : 'rgba(0,0,0,0.4)',
                   padding: '2px 0',
@@ -218,9 +227,9 @@ function DemoPanel() {
           </motion.div>
         </AnimatePresence>
         <div style={{
-          fontSize: 8,
+          fontSize: 10,
           fontWeight: 700,
-          padding: '4px 9px',
+          padding: '4px 8px',
           borderRadius: 6,
           background: frame.accent,
           color: '#fff',
@@ -263,20 +272,20 @@ function DemoPanel() {
       {/* Content cards */}
       <div style={{ padding: '12px 16px 16px', background: '#fff' }}>
         <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(0,0,0,0.35)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>
-          Featured
+          Example outputs
         </div>
         <AnimatePresence mode="wait">
           <motion.div
             key={`cards-${idx}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.28 }}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.28, ease: [0.23,1,0.32,1] }}
             style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
           >
             {frame.cards.map((card, i) => (
               <div key={i} style={{
-                padding: '7px 10px',
+                padding: '8px 12px',
                 borderRadius: 8,
                 background: '#f9fafb',
                 border: '1px solid rgba(0,0,0,0.07)',
@@ -314,10 +323,13 @@ function DemoPanel() {
         <div style={{ fontSize: 9, color: 'rgba(0,0,0,0.35)' }}>
           {frame.label} prototype
         </div>
-        <div style={{ display: 'flex', gap: 4 }}>
-          {PROTO_FRAMES.map((_, i) => (
+        <div role="tablist" aria-label="Prototype examples" style={{ display: 'flex', gap: 4 }}>
+          {PROTO_FRAMES.map((f, i) => (
             <button
               key={i}
+              role="tab"
+              aria-selected={i === idx}
+              aria-label={`View ${f.label} example`}
               onClick={() => { setPrevIdx(idx); setIdx(i) }}
               style={{
                 width: i === idx ? 14 : 5,
@@ -326,6 +338,8 @@ function DemoPanel() {
                 background: i === idx ? frame.accent : 'rgba(0,0,0,0.15)',
                 border: 'none',
                 cursor: 'pointer',
+                padding: '8px 4px',
+                margin: '-8px -2px',
                 transition: 'width 280ms cubic-bezier(0.23,1,0.32,1), background-color 280ms cubic-bezier(0.23,1,0.32,1)',
               }}
             />
@@ -344,19 +358,30 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
   const [loading, setLoading] = useState(false)
   const [activeStep, setActiveStep] = useState(-1)
   const [error, setError] = useState('')
+  const [clickedEx, setClickedEx] = useState<string | null>(null)
+  const errorRef = useRef<HTMLParagraphElement>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!idea.trim() || loading) return
+    const trimmedIdea = idea.trim()
+    if (!trimmedIdea || loading) return
     setLoading(true)
     setError('')
     setActiveStep(0)
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000)
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idea }),
+        body: JSON.stringify({ idea: trimmedIdea }),
+        signal: controller.signal,
       })
+      if (!res.ok) {
+        if (res.status === 429) throw new Error('Rate limit')
+        const errText = await res.text().catch(() => '')
+        throw new Error(errText || 'No stream')
+      }
       if (!res.body) throw new Error('No stream')
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
@@ -369,16 +394,17 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
         buf = lines.pop() ?? ''
         for (const line of lines) {
           if (!line.startsWith('data: ')) continue
-          const data = JSON.parse(line.slice(6))
-          if (data.error) throw new Error(data.error)
-          if (typeof data.step === 'number') setActiveStep(data.step)
+          let data: Record<string, unknown>
+          try { data = JSON.parse(line.slice(6)) } catch { continue }
+          if (data.error) throw new Error(typeof data.error === 'string' ? data.error : 'API error')
+          if (typeof data.step === 'number') setActiveStep(data.step as number)
           if (data.id) {
             saveToHistory({
-              id: data.id,
-              name: data.name ?? idea.trim().split(' ').slice(0, 3).join(' '),
-              category: data.category ?? 'general',
+              id: data.id as string,
+              name: (data.name as string) ?? trimmedIdea.split(' ').slice(0, 3).join(' '),
+              category: (data.category as string) ?? 'general',
               createdAt: new Date().toISOString(),
-              prompt: idea.trim(),
+              prompt: trimmedIdea,
             })
             router.push(`/proto/${data.id}`)
             return
@@ -386,9 +412,21 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
         }
       }
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
+      const isAbort = e instanceof Error && (e.name === 'AbortError' || e.message === 'AbortError')
+      const raw = e instanceof Error ? e.message : ''
+      const friendly = isAbort
+        ? 'Generation timed out — please try again.'
+        : raw === 'No stream' || raw === 'Failed to fetch'
+          ? 'Generation failed — please try again.'
+          : raw.startsWith('Rate limit')
+            ? 'Too many requests — wait a moment and try again.'
+            : 'Something went wrong. Try a different idea or check back in a moment.'
+      setError(friendly)
       setLoading(false)
       setActiveStep(-1)
+      setTimeout(() => errorRef.current?.focus(), 50)
+    } finally {
+      clearTimeout(timeoutId)
     }
   }
 
@@ -402,7 +440,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
         <div style={{
           maxWidth: 1100,
           margin: '0 auto',
-          padding: '36px 24px 40px',
+          padding: '40px 24px',
           display: 'grid',
           gridTemplateColumns: 'minmax(0,1fr)',
           gap: 40,
@@ -412,26 +450,26 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
         >
           {/* Left: copy + form */}
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease: [0.23,1,0.32,1] }}
+            transition={{ duration: 0.4, ease: [0.23,1,0.32,1] }}
           >
             {/* Badge */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontSize: 11, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase',
-              padding: '5px 14px', borderRadius: 9999,
-              background: 'rgba(124,58,237,0.08)',
-              border: '1px solid rgba(124,58,237,0.18)',
-              color: '#7c3aed',
-              marginBottom: 18,
+              fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+              padding: '4px 16px', borderRadius: 9999,
+              background: 'var(--accent-subtle)',
+              border: '1px solid var(--accent-border)',
+              color: 'var(--accent)',
+              marginBottom: 16,
             }}>
               <span style={{
                 width: 6, height: 6, borderRadius: '50%',
-                background: '#7c3aed', display: 'inline-block',
+                background: 'var(--accent)', display: 'inline-block',
                 flexShrink: 0,
               }} />
-              Free · No signup · AI-native
+              Free · No signup · Instant results
             </div>
 
             <h1 style={{
@@ -440,12 +478,12 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
               lineHeight: 1.0,
               letterSpacing: '-0.04em',
               color: '#0f0f11',
-              marginBottom: 14,
+              marginBottom: 16,
             }}>
               {overrides.headline ?? (
                 <>Turn ideas into{' '}
                 <span style={{
-                  color: '#7c3aed',
+                  color: 'var(--accent)',
                   display: 'inline-block',
                 }}>
                   prototypes
@@ -461,19 +499,19 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
               marginBottom: 20,
               maxWidth: 480,
             }}>
-              {overrides.subheadline ?? <>Describe your idea. Get a 5-page branded prototype with real copy, colors, and layout — plus{' '}
-                <strong style={{ color: '#0f0f11', fontWeight: 700 }}>llms.txt and MCP tool stubs</strong>{' '}
-                ready for any AI workflow. No login required.</>}
+              {overrides.subheadline ?? <>Describe your idea. Get a 5-page branded prototype with real copy, colors, and layout in seconds — plus{' '}
+                <strong style={{ color: '#0f0f11', fontWeight: 700 }}>AI-ready export files</strong>{' '}
+                so your agents and co-pilots instantly understand your product. No login required.</>}
             </p>
 
             {/* Feature pills */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 22 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
               {[
                 { label: '⚡ Instant results', color: '#7c3aed' },
                 { label: '🎨 Branded design', color: '#0284c7' },
-                { label: '📱 Mobile-first', color: '#059669' },
+                { label: '📱 Mobile-first', color: '#0d9488' },
                 { label: '🤖 AI-powered', color: '#ea580c' },
-                { label: '85% fewer tokens', color: 'rgba(15,15,17,0.45)' },
+                { label: '🗂 5 pages, ready to use', color: 'rgba(15,15,17,0.45)' },
               ].map(feat => (
                 <span key={feat.label} style={{
                   fontSize: 11,
@@ -491,13 +529,18 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} id="generate" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <form onSubmit={handleSubmit} id="generate" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <label htmlFor="idea-input" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
+                Describe your product idea
+              </label>
               <textarea
+                id="idea-input"
                 value={idea}
                 onChange={e => setIdea(e.target.value)}
                 placeholder='Describe your idea… e.g. "A marketplace for local fitness trainers"'
                 rows={3}
                 disabled={loading}
+                aria-describedby={error ? 'idea-error' : undefined}
                 style={{
                   width: '100%',
                   padding: '13px 16px',
@@ -511,12 +554,13 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                   boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
                 }}
               />
-              {error && <p style={{ color: '#dc2626', fontSize: 13 }}>{error}</p>}
+              {error && <p ref={errorRef} id="idea-error" role="alert" tabIndex={-1} style={{ color: '#dc2626', fontSize: 13, margin: 0 }}>{error}</p>}
 
               {/* Layout archetype badge — shows as user types */}
               <AnimatePresence>
                 {layoutHint && !loading && (
                   <motion.div
+                    key={layoutHint.id}
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
@@ -533,17 +577,9 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                       <span style={{ width: 10, height: 10, borderRadius: 3, background: layoutHint.bg, border: '1px solid rgba(0,0,0,0.12)', flexShrink: 0 }} />
                       <span style={{ width: 10, height: 10, borderRadius: 3, background: layoutHint.accent, flexShrink: 0 }} />
                     </span>
-                    <span style={{ color: 'rgba(15,15,17,0.45)', fontWeight: 500 }}>Layout:</span>
-                    <span style={{ fontWeight: 700, color: layoutHint.accent }}>
-                      {layoutHint.id} — {layoutHint.name}
-                    </span>
-                    <span style={{
-                      marginLeft: 'auto', fontSize: 10, fontWeight: 600,
-                      color: 'rgba(15,15,17,0.35)',
-                      padding: '2px 6px', borderRadius: 4,
-                      background: 'rgba(0,0,0,0.04)',
-                    }}>
-                      {layoutHint.openDesignSkill}
+                    <span style={{ color: 'rgba(15,15,17,0.45)', fontWeight: 500 }}>Detected layout:</span>
+                    <span style={{ fontWeight: 700, color: layoutHint.accent, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {layoutHint.name}
                     </span>
                   </motion.div>
                 )}
@@ -552,26 +588,45 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
               <motion.button
                 type="submit"
                 disabled={loading || !idea.trim()}
+                aria-busy={loading}
+                aria-label={loading ? 'Generating prototype, please wait' : undefined}
                 className="btn-primary"
                 style={{ padding: '14px 24px', fontSize: 15, width: '100%' }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: 0.12, ease: [0.23, 1, 0.32, 1] }}
               >
-                {loading ? (
-                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-                    <svg style={{ animation: 'spin 1s linear infinite', width: 18, height: 18 }} viewBox="0 0 24 24" fill="none">
-                      <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                    </svg>
-                    Building…
-                  </span>
-                ) : (
-                  'Generate prototype →'
-                )}
+                <AnimatePresence mode="wait" initial={false}>
+                  {loading ? (
+                    <motion.span
+                      key="loading"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15, ease: [0.23,1,0.32,1] }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}
+                    >
+                      <svg className="spin-icon" style={{ width: 18, height: 18 }} viewBox="0 0 24 24" fill="none">
+                        <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Building…
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      key="idle"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15, ease: [0.23,1,0.32,1] }}
+                    >
+                      Generate prototype →
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </motion.button>
 
               {loading && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginTop: 2 }}>
+                <div aria-live="polite" aria-label="Generation progress" style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
                   {GEN_STEPS.map((label, i) => {
                     const done = i < activeStep
                     const active = i === activeStep
@@ -579,11 +634,18 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13 }}>
                         <span style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           {done ? (
-                            <svg style={{ width: 16, height: 16, color: '#059669' }} viewBox="0 0 20 20" fill="currentColor">
+                            <motion.svg
+                              initial={{ scale: 0.5, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ duration: 0.2, ease: [0.23,1,0.32,1] }}
+                              style={{ width: 16, height: 16, color: '#059669' }}
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
+                            </motion.svg>
                           ) : active ? (
-                            <svg style={{ animation: 'spin 1s linear infinite', width: 15, height: 15, color: '#7c3aed' }} viewBox="0 0 24 24" fill="none">
+                            <svg className="spin-icon" style={{ width: 15, height: 15, color: 'var(--accent)' }} viewBox="0 0 24 24" fill="none">
                               <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                               <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                             </svg>
@@ -610,26 +672,36 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 {EXAMPLES.map(ex => (
                   <button
                     key={ex}
-                    onClick={() => setIdea(ex)}
+                    onClick={() => {
+                      setIdea(ex)
+                      setClickedEx(ex)
+                      setTimeout(() => setClickedEx(null), 600)
+                    }}
                     className="example-pill"
+                    aria-label={`Use example: ${ex}`}
                     style={{
                       fontSize: 11,
                       padding: '4px 10px',
                       borderRadius: 99,
                       background: '#fff',
-                      border: '1px solid rgba(0,0,0,0.1)',
-                      color: 'rgba(15,15,17,0.5)',
+                      border: `1px solid ${clickedEx === ex ? 'rgba(124,58,237,0.5)' : 'rgba(0,0,0,0.1)'}`,
+                      color: clickedEx === ex ? '#7c3aed' : 'rgba(15,15,17,0.5)',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
                       boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                      transition: 'border-color 150ms ease, color 150ms ease',
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = 'rgba(124,58,237,0.4)'
-                      e.currentTarget.style.color = '#7c3aed'
+                      if (clickedEx !== ex) {
+                        e.currentTarget.style.borderColor = 'rgba(124,58,237,0.4)'
+                        e.currentTarget.style.color = '#7c3aed'
+                      }
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'
-                      e.currentTarget.style.color = 'rgba(15,15,17,0.5)'
+                      if (clickedEx !== ex) {
+                        e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'
+                        e.currentTarget.style.color = 'rgba(15,15,17,0.5)'
+                      }
                     }}
                   >
                     {ex}
@@ -644,9 +716,9 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
 
           {/* Right: animated prototype demo panel */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.12, ease: [0.23,1,0.32,1] }}
+            transition={{ duration: 0.45, delay: 0.1, ease: [0.23,1,0.32,1] }}
             style={{ display: mounted ? 'block' : 'none' }}
           >
             <DemoPanel />
@@ -693,12 +765,12 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 key={step.label}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -2, boxShadow: '0 8px 28px rgba(124,58,237,0.1)' }}
+                whileHover={{ y: -2 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.35, delay: i * 0.07, ease: [0.23,1,0.32,1] }}
                 style={{
                   borderRadius: 14,
-                  padding: '20px 18px',
+                  padding: '20px 20px',
                   background: '#fafafa',
                   border: '1px solid rgba(0,0,0,0.08)',
                 }}
@@ -719,7 +791,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p style={{
             textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
-            color: '#7c3aed', textTransform: 'uppercase', marginBottom: 8,
+            color: 'var(--accent)', textTransform: 'uppercase', marginBottom: 8,
           }}>
             Built for the AI age
           </p>
@@ -733,7 +805,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
             textAlign: 'center', fontSize: 14, color: 'rgba(15,15,17,0.45)',
             maxWidth: 560, margin: '0 auto 40px',
           }}>
-            Claude Design makes pretty mockups. Google Stitch generates screens. ProtoForge makes prototypes that AI agents can actually use.
+            Other tools make pretty screens. ProtoForge makes prototypes your AI tools can actually read, use, and build on.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
             {AI_FEATURES.map((f, i) => (
@@ -741,7 +813,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 key={f.label}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -2, boxShadow: `0 8px 28px ${f.badgeColor}20` }}
+                whileHover={{ y: -2 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.35, delay: i * 0.07, ease: [0.23,1,0.32,1] }}
                 style={{
@@ -755,8 +827,8 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <span style={{ fontSize: 22 }}>{f.icon}</span>
                   <span style={{
-                    fontSize: 9, fontWeight: 800, padding: '2px 8px', borderRadius: 99,
-                    background: `${f.badgeColor}14`, color: f.badgeColor, letterSpacing: '0.08em',
+                    fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 99,
+                    background: `${f.badgeColor}14`, color: f.badgeColor, letterSpacing: '0.06em',
                   }}>{f.badge}</span>
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#0f0f11', marginBottom: 6 }}>{f.label}</div>
@@ -771,21 +843,66 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
       <footer style={{
         borderTop: '1px solid rgba(0,0,0,0.07)',
         padding: '20px 24px',
-        textAlign: 'center',
-        fontSize: 11,
-        color: 'rgba(15,15,17,0.3)',
         background: '#fff',
       }}>
-        ProtoForge · Prototype fast, build smarter · AI-native
+        <div style={{
+          maxWidth: 1100, margin: '0 auto',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8,
+          fontSize: 11, color: 'rgba(15,15,17,0.5)',
+        }}>
+          <span>{'© '}{new Date().getFullYear()}{' ProtoForge · Prototype fast, build smarter'}</span>
+          <nav aria-label="Footer" style={{ display: 'flex', gap: 16 }}>
+            <a href="/privacy" style={{ color: 'rgba(15,15,17,0.5)', textDecoration: 'none' }}>Privacy</a>
+            <a href="/terms" style={{ color: 'rgba(15,15,17,0.5)', textDecoration: 'none' }}>Terms</a>
+          </nav>
+        </div>
       </footer>
 
       <style>{`
+        :root {
+          --accent: #7c3aed;
+          --accent-subtle: rgba(124,58,237,0.08);
+          --accent-border: rgba(124,58,237,0.18);
+          --fg: #0f0f11;
+          --fg-muted: rgba(15,15,17,0.5);
+          --fg-faint: rgba(15,15,17,0.35);
+          --bg-page: #fafafa;
+          --bg-surface: #fff;
+          --border: rgba(0,0,0,0.08);
+          --success: #059669;
+          --radius-sm: 6px;
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 14px;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .spin-icon { animation: spin 1s linear infinite; }
+        .feature-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
         @media (prefers-reduced-motion: reduce) {
+          .spin-icon { animation: none; opacity: 0.5; }
           [style*="animation"] { animation: none !important; }
+          * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
         }
         @media (min-width: 1024px) {
           .lg-grid-2 { grid-template-columns: 1fr 1fr !important; }
+        }
+        .example-pill:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
+        }
+        [role="tab"]:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 3px;
+          border-radius: 4px;
+        }
+        .btn-primary:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
+        }
+        textarea:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 0;
+          border-color: var(--accent) !important;
         }
       `}</style>
     </div>
