@@ -94,6 +94,13 @@ Product DNA: "${dna}"
 Category: ${category} | Style: ${archetype.referenceStyle} | Hero: ${archetype.heroStyle} | Colors: ${archetype.colorPersonality} | Cards: ${archetype.cardStyle}
 Layout Archetype: ${layoutArchetype.id} — ${layoutArchetype.name} | BG: ${layoutArchetype.bg} | Accent: ${layoutArchetype.accent} | Pattern: ${layoutArchetype.heroPattern}
 
+Quality bar (apply these — same bar enforced by our design-loop/ui-ux-pro-max review pipeline):
+- Headline states what/who/outcome in ≤8 words. No generic SaaS filler ("Build faster", "Empower your team").
+- Every feature/stat/testimonial item must be specific to THIS product — nothing a competitor could paste unchanged.
+- Stats must read as plausible and modest (no "10,000+ users" for an unlaunched idea) — prefer concrete mechanics ("3-step setup", "exports in 1 click") over fabricated social proof.
+- CTA text names the actual action ("Generate my plan", not "Get Started").
+- Section headlines avoid restating the page title; each adds new information.
+
 Generate a complete 5-page website prototype spec. Return ONLY valid JSON, no markdown:
 
 {
