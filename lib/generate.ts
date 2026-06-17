@@ -1,6 +1,7 @@
 import Groq from 'groq-sdk'
 import { ProtoSpec } from './types'
 import { randomUUID } from 'crypto'
+import { suggestLayout } from './layoutSystem'
 
 let _groq: Groq | null = null
 function getGroq(): Groq {
@@ -79,6 +80,10 @@ export async function generateProto(idea: string): Promise<ProtoSpec> {
   const category = detectCategory(idea)
   const archetype = DESIGN_ARCHETYPES[category]
 
+  // Pick T1-T17 layout archetype from design system
+  const layoutSuggestion = suggestLayout(idea)
+  const layoutArchetype = layoutSuggestion.primary
+
   // Step 1: compress idea to ~40-token DNA (saves ~85% tokens in main call)
   const naiveTokenEstimate = Math.ceil(idea.split(' ').length * 1.3)
   const { dna, compressionTokens } = await compressIdeaToDNA(idea, category, archetype.referenceStyle)
@@ -87,6 +92,7 @@ export async function generateProto(idea: string): Promise<ProtoSpec> {
 
 Product DNA: "${dna}"
 Category: ${category} | Style: ${archetype.referenceStyle} | Hero: ${archetype.heroStyle} | Colors: ${archetype.colorPersonality} | Cards: ${archetype.cardStyle}
+Layout Archetype: ${layoutArchetype.id} — ${layoutArchetype.name} | BG: ${layoutArchetype.bg} | Accent: ${layoutArchetype.accent} | Pattern: ${layoutArchetype.heroPattern}
 
 Generate a complete 5-page website prototype spec. Return ONLY valid JSON, no markdown:
 
@@ -268,9 +274,12 @@ Make all copy specific to the DNA above. Every item must be relevant to this spe
     tokenStats: { compressionTokens, mainTokens, savedTokens, savingsPct },
     name: parsed.name,
     tagline: parsed.tagline,
-    primaryColor: parsed.primaryColor,
-    accentColor: parsed.accentColor,
+    primaryColor: layoutArchetype.bg,   // use T1-T17 theme, not hallucinated color
+    accentColor: layoutArchetype.accent,
     category,
+    layoutId: layoutArchetype.id,
+    layoutName: layoutArchetype.name,
+    openDesignSkill: layoutArchetype.openDesignSkill,
     audience: parsed.audience,
     pages: parsed.pages,
     createdAt: new Date().toISOString(),

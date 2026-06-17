@@ -1,9 +1,48 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { ContentOverrides } from '@/lib/content'
 import { useRouter } from 'next/navigation'
 import ProjectsDashboard, { saveToHistory } from '@/components/ProjectsDashboard'
+
+interface LayoutHint {
+  id: string
+  name: string
+  bg: string
+  accent: string
+  openDesignSkill: string
+}
+
+function useLayoutHint(idea: string): LayoutHint | null {
+  const [hint, setHint] = useState<LayoutHint | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    if (idea.trim().length < 8) { setHint(null); return }
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/layout-suggest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ input: idea }),
+        })
+        if (!res.ok) return
+        const data = await res.json()
+        if (data.primary) setHint({
+          id: data.primary.id,
+          name: data.primary.name,
+          bg: data.primary.bg,
+          accent: data.primary.accent,
+          openDesignSkill: data.primary.openDesignSkill,
+        })
+      } catch { /* ignore */ }
+    }, 600)
+    return () => { if (timer.current) clearTimeout(timer.current) }
+  }, [idea])
+
+  return hint
+}
 
 const GEN_STEPS = [
   'Analysing your idea…',
@@ -353,6 +392,8 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
     }
   }
 
+  const layoutHint = useLayoutHint(idea)
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa' }}>
 
@@ -471,6 +512,43 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 }}
               />
               {error && <p style={{ color: '#dc2626', fontSize: 13 }}>{error}</p>}
+
+              {/* Layout archetype badge — shows as user types */}
+              <AnimatePresence>
+                {layoutHint && !loading && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2, ease: [0.23,1,0.32,1] }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '7px 12px', borderRadius: 8,
+                      background: '#fff',
+                      border: `1px solid ${layoutHint.accent}33`,
+                      fontSize: 12,
+                    }}
+                  >
+                    <span style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                      <span style={{ width: 10, height: 10, borderRadius: 3, background: layoutHint.bg, border: '1px solid rgba(0,0,0,0.12)', flexShrink: 0 }} />
+                      <span style={{ width: 10, height: 10, borderRadius: 3, background: layoutHint.accent, flexShrink: 0 }} />
+                    </span>
+                    <span style={{ color: 'rgba(15,15,17,0.45)', fontWeight: 500 }}>Layout:</span>
+                    <span style={{ fontWeight: 700, color: layoutHint.accent }}>
+                      {layoutHint.id} — {layoutHint.name}
+                    </span>
+                    <span style={{
+                      marginLeft: 'auto', fontSize: 10, fontWeight: 600,
+                      color: 'rgba(15,15,17,0.35)',
+                      padding: '2px 6px', borderRadius: 4,
+                      background: 'rgba(0,0,0,0.04)',
+                    }}>
+                      {layoutHint.openDesignSkill}
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <motion.button
                 type="submit"
                 disabled={loading || !idea.trim()}

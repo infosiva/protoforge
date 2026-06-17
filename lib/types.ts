@@ -41,9 +41,12 @@ export interface ProtoSpec {
   tokenStats?: TokenStats
   name: string          // product name
   tagline: string
-  primaryColor: string  // hex
-  accentColor: string
+  primaryColor: string  // hex (bg color from T1-T17)
+  accentColor: string   // hex (accent from T1-T17)
   category: string
+  layoutId?: string     // 'T1' … 'T17'
+  layoutName?: string
+  openDesignSkill?: string
   audience: string
   pages: PageSpec[]
   createdAt: string
