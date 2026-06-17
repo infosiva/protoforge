@@ -19,8 +19,10 @@ export interface LayoutArchetype {
 
 // §Z6 mandatory pipeline — runs on EVERY archetype regardless of category.
 // ui-ux-pro-max = quality/spacing/hierarchy pass. 21st-registry = pull polished
-// components instead of hand-rolling buttons/cards/forms. emil-design-eng = taste/polish.
-export const MANDATORY_PIPELINE_SKILLS = ['/ui-ux-pro-max', '/21st-registry', '/emil-design-eng'] as const
+// components instead of hand-rolling buttons/cards/forms (live via mcp__21st-dev-magic__*).
+// emil-design-eng = taste/polish. design-loop = final 8-agent x4-iteration audit
+// (github.com/andrejkanuch/design-lenses, installed 2026-06-17).
+export const MANDATORY_PIPELINE_SKILLS = ['/ui-ux-pro-max', '/21st-registry', '/emil-design-eng', '/design-loop'] as const
 
 export const LAYOUT_ARCHETYPES: LayoutArchetype[] = [
   {
