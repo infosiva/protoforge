@@ -1,4 +1,5 @@
 import { get } from "@vercel/edge-config";
+import { getLayoutById } from "./layoutSystem";
 
 export interface SiteWidgets {
   chatbot?: boolean;
@@ -37,6 +38,7 @@ export interface SiteTheme {
   layout?: SiteLayout;
   copy?: SiteCopy;
   font?: SiteFont;
+  layoutId?: string;   // 'T1' … 'T17' — hub-controlled, overrides background/primary if set
 }
 
 /**
@@ -61,9 +63,13 @@ export function buildThemeStyleTag(theme: SiteTheme | null, defaults?: {
   primary?: string;
   secondary?: string;
 }): string {
-  const bg  = theme?.background ?? defaults?.background;
-  const pri = theme?.primary    ?? defaults?.primary;
-  const sec = theme?.secondary  ?? defaults?.secondary;
+  // layoutId (hub-controlled, T1-T17) takes priority over explicit background/primary —
+  // lets hub flip a project's whole look with zero code changes.
+  const layout = theme?.layoutId ? getLayoutById(theme.layoutId) : undefined;
+
+  const bg  = layout?.bg     ?? theme?.background ?? defaults?.background;
+  const pri = layout?.accent ?? theme?.primary    ?? defaults?.primary;
+  const sec = layout?.accent2 ?? theme?.secondary  ?? defaults?.secondary;
 
   const vars: string[] = [];
   if (bg)  vars.push(`--background: ${bg}; --theme-base: ${bg};`);
