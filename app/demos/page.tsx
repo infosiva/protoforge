@@ -1,5 +1,61 @@
 'use client'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+function T18LiveDemo() {
+  const [imgSrc, setImgSrc] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [category, setCategory] = useState('photo-restore')
+
+  const generate = async (cat: string) => {
+    setLoading(true)
+    setImgSrc(null)
+    try {
+      const r = await fetch(`/api/t18-demo?category=${cat}`)
+      const d = await r.json()
+      if (d.imageDataUrl) setImgSrc(d.imageDataUrl)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { generate(category) }, [])
+
+  const categories = [
+    { id: 'photo-restore', label: '📷 Photo Restore' },
+    { id: 'interior', label: '🏠 Interior' },
+    { id: 'travel', label: '✈️ Travel' },
+    { id: 'ai-art', label: '🎨 AI Art' },
+  ]
+
+  return (
+    <div style={{ background: '#0e0414', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 10, padding: 12, minHeight: 160 }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 8, flexWrap: 'wrap' }}>
+        {categories.map(c => (
+          <button key={c.id} onClick={() => { setCategory(c.id); generate(c.id) }}
+            style={{ fontSize: 8, padding: '3px 7px', borderRadius: 5, border: `1px solid ${category === c.id ? '#8b5cf6' : 'rgba(139,92,246,0.2)'}`, background: category === c.id ? 'rgba(139,92,246,0.2)' : 'transparent', color: category === c.id ? '#c4b5fd' : '#7c6f9a', cursor: 'pointer' }}>
+            {c.label}
+          </button>
+        ))}
+        <button onClick={() => generate(category)}
+          style={{ fontSize: 8, padding: '3px 7px', borderRadius: 5, border: '1px solid rgba(139,92,246,0.3)', background: 'rgba(139,92,246,0.12)', color: '#a78bfa', cursor: 'pointer', marginLeft: 'auto' }}>
+          ↻ Regen
+        </button>
+      </div>
+      <div style={{ borderRadius: 7, overflow: 'hidden', background: '#1a0a2e', minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {loading && (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ width: 20, height: 20, border: '2px solid rgba(139,92,246,0.3)', borderTop: '2px solid #8b5cf6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 6px' }} />
+            <div style={{ fontSize: 8, color: '#7c6f9a' }}>Generating via Nano Banana…</div>
+          </div>
+        )}
+        {!loading && imgSrc && <img src={imgSrc} alt="AI generated" style={{ width: '100%', height: 'auto', maxHeight: 120, objectFit: 'cover', display: 'block' }} />}
+        {!loading && !imgSrc && <div style={{ fontSize: 8, color: '#7c6f9a' }}>Generation failed — check GEMINI_API_KEY</div>}
+      </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    </div>
+  )
+}
 
 const LAYOUTS = [
   {
@@ -349,6 +405,13 @@ const LAYOUTS = [
       </div>
     ),
   },
+  {
+    id: 'T18', name: 'AI-Generated Live Visual Hero', bg: '#0e0414', accent: '#8b5cf6', dark: true,
+    projects: ['photorestore', 'homecanvas', 'pixelforge'],
+    skills: ['/image-gen', '/frontend-design', '/animate', '/transitions-dev'],
+    desc: 'Hero visual generated live via Gemini Nano Banana on load. Real API, real output. Never static placeholder.',
+    demo: <T18LiveDemo />,
+  },
 ]
 
 const CATEGORIES = [
@@ -371,23 +434,23 @@ export default function DemosPage() {
     <div style={{ minHeight: '100vh', background: '#f8fafc', paddingBottom: 80 }}>
       {/* Hero */}
       <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '48px 32px 40px', textAlign: 'center' }}>
-        <div style={{ fontSize: 11, color: '#7c3aed', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 10 }}>Design System</div>
+        <div style={{ fontSize: 11, color: '#4f46e5', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 10 }}>Design System</div>
         <h1 style={{ fontSize: 32, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', margin: 0, marginBottom: 10 }}>
-          17 Layout Archetypes
+          18 Layout Archetypes
         </h1>
         <p style={{ color: '#64748b', fontSize: 15, maxWidth: 560, margin: '0 auto 20px', lineHeight: 1.6 }}>
           Every portfolio project is built on one of these. Unique bg/accent per project, animated demo panel, mandatory skill pipeline. Research-driven, not copy-paste.
         </p>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
           {['Open Design', 'Emil Kowalski', 'Framer Motion', 'D3.js', 'GSAP', 'Shader Dev'].map(t => (
-            <span key={t} style={{ background: '#f3e8ff', color: '#7c3aed', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 20, border: '1px solid #e9d5ff' }}>{t}</span>
+            <span key={t} style={{ background: '#eef2ff', color: '#4f46e5', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 20, border: '1px solid #c7d2fe' }}>{t}</span>
           ))}
         </div>
       </div>
 
       {/* Stats row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0, borderBottom: '1px solid #e2e8f0', background: '#fff' }}>
-        {[['17', 'Layout archetypes'], ['33', 'Portfolio projects'], ['6+', 'Design skill pipelines'], ['100%', 'Unique bg/accent']].map(([v, l]) => (
+        {[['18', 'Layout archetypes'], ['33', 'Portfolio projects'], ['6+', 'Design skill pipelines'], ['100%', 'Unique bg/accent']].map(([v, l]) => (
           <div key={l} style={{ padding: '16px 24px', textAlign: 'center', borderRight: '1px solid #e2e8f0' }}>
             <div style={{ fontSize: 20, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em' }}>{v}</div>
             <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{l}</div>
@@ -451,7 +514,7 @@ export default function DemosPage() {
                   <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Skill pipeline</div>
                   <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                     {layout.skills.map(s => (
-                      <span key={s} style={{ fontSize: 9, background: '#fdf4ff', border: '1px solid #e9d5ff', borderRadius: 4, padding: '2px 6px', color: '#7c3aed', fontFamily: 'monospace' }}>{s}</span>
+                      <span key={s} style={{ fontSize: 9, background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: 4, padding: '2px 6px', color: '#4f46e5', fontFamily: 'monospace' }}>{s}</span>
                     ))}
                   </div>
                 </div>

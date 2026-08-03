@@ -8,7 +8,7 @@
 import { useState } from 'react'
 import { usePromo } from '@/hooks/usePromo'
 
-const ACCENT = 'var(--accent, #7c3aed)'
+const ACCENT = 'var(--accent, #4f46e5)'
 
 export default function PromoBar() {
   const { isUnlocked, daysLeft } = usePromo()
@@ -20,7 +20,7 @@ export default function PromoBar() {
     return (
       <div
         className="mx-auto max-w-md text-center text-sm font-medium rounded-full px-4 py-2 mb-4"
-        style={{ background: 'rgba(124,58,237,0.12)', color: ACCENT }}
+        style={{ background: 'rgba(79,70,229,0.16)', color: ACCENT }}
       >
         🎉 Pro access active — {daysLeft} day{daysLeft === 1 ? '' : 's'} remaining
       </div>
@@ -65,7 +65,7 @@ export default function PromoBar() {
             onKeyDown={(e) => e.key === 'Enter' && submit()}
             placeholder="Enter code"
             className="rounded-md border px-3 py-1.5 text-sm bg-transparent"
-            style={{ borderColor: 'rgba(124,58,237,0.4)' }}
+            style={{ borderColor: 'rgba(79,70,229,0.45)' }}
           />
           <button
             onClick={submit}

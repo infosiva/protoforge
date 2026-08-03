@@ -1,8 +1,8 @@
 export default function PrivacyPage() {
   return (
-    <main style={{ maxWidth: 720, margin: '0 auto', padding: '60px 24px', fontFamily: 'system-ui', lineHeight: 1.7, color: '#1a1a1a' }}>
+    <main style={{ maxWidth: 720, margin: '0 auto', padding: '60px 24px', fontFamily: 'system-ui', lineHeight: 1.7, color: '#e8eaf0', background: '#080d1a' }}>
       <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 8 }}>Privacy Policy</h1>
-      <p style={{ color: '#666', marginBottom: 40 }}>Last updated: June 2026</p>
+      <p style={{ color: 'rgba(232,234,240,0.55)', marginBottom: 40 }}>Last updated: June 2026</p>
       <h2 style={{ fontSize: 20, fontWeight: 700, marginTop: 32 }}>What we collect</h2>
       <p>ProtoForge collects only information you provide directly — such as your email address when you sign up, and anonymous usage data to improve the service. We do not sell your data.</p>
       <h2 style={{ fontSize: 20, fontWeight: 700, marginTop: 32 }}>Cookies</h2>
@@ -10,9 +10,9 @@ export default function PrivacyPage() {
       <h2 style={{ fontSize: 20, fontWeight: 700, marginTop: 32 }}>Third-party services</h2>
       <p>We use Vercel for hosting and Supabase for data storage. These services have their own privacy policies.</p>
       <h2 style={{ fontSize: 20, fontWeight: 700, marginTop: 32 }}>Your rights</h2>
-      <p>You can request deletion of your account and data at any time by emailing <a href="mailto:hello@protofast.app" style={{ color: '#7c3aed' }}>hello@protofast.app</a>.</p>
+      <p>You can request deletion of your account and data at any time by emailing <a href="mailto:hello@protofast.app" style={{ color: '#818cf8' }}>hello@protofast.app</a>.</p>
       <h2 style={{ fontSize: 20, fontWeight: 700, marginTop: 32 }}>Contact</h2>
-      <p>Questions? Email <a href="mailto:hello@protofast.app" style={{ color: '#7c3aed' }}>hello@protofast.app</a></p>
+      <p>Questions? Email <a href="mailto:hello@protofast.app" style={{ color: '#818cf8' }}>hello@protofast.app</a></p>
     </main>
   )
 }

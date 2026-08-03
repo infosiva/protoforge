@@ -433,7 +433,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
   const layoutHint = useLayoutHint(idea)
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fafafa' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#080d1a' }}>
 
       {/* ── Hero: split 2-col ── */}
       <main style={{ flex: 1, position: 'relative', zIndex: 1 }}>
@@ -477,7 +477,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
               fontWeight: 900,
               lineHeight: 1.0,
               letterSpacing: '-0.04em',
-              color: '#0f0f11',
+              color: '#e8eaf0',
               marginBottom: 16,
             }}>
               {overrides.headline ?? (
@@ -494,20 +494,20 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
 
             <p style={{
               fontSize: 15,
-              color: 'rgba(15,15,17,0.55)',
+              color: 'rgba(232,234,240,0.6)',
               lineHeight: 1.65,
               marginBottom: 20,
               maxWidth: 480,
             }}>
               {overrides.subheadline ?? <>Describe your idea. Get a 5-page branded prototype with real copy, colors, and layout in seconds — plus{' '}
-                <strong style={{ color: '#0f0f11', fontWeight: 700 }}>AI-ready export files</strong>{' '}
+                <strong style={{ color: '#e8eaf0', fontWeight: 700 }}>AI-ready export files</strong>{' '}
                 so your agents and co-pilots instantly understand your product. No login required.</>}
             </p>
 
             {/* Feature pills */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
               {[
-                { label: '⚡ Instant results', color: '#7c3aed' },
+                { label: '⚡ Instant results', color: '#4f46e5' },
                 { label: '🎨 Branded design', color: '#0284c7' },
                 { label: '📱 Mobile-first', color: '#0d9488' },
                 { label: '🤖 AI-powered', color: '#ea580c' },
@@ -650,10 +650,10 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                               <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                             </svg>
                           ) : (
-                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(0,0,0,0.15)', display: 'block' }} />
+                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'block' }} />
                           )}
                         </span>
-                        <span style={{ color: done ? '#059669' : active ? '#0f0f11' : 'rgba(15,15,17,0.35)' }}>
+                        <span style={{ color: done ? '#059669' : active ? '#e8eaf0' : 'rgba(232,234,240,0.4)' }}>
                           {label}
                         </span>
                       </div>
@@ -665,7 +665,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
 
             {/* Examples */}
             <div style={{ marginTop: 16 }}>
-              <p style={{ fontSize: 10, color: 'rgba(15,15,17,0.35)', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 8 }}>
+              <p style={{ fontSize: 10, color: 'rgba(232,234,240,0.4)', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 8 }}>
                 Try an example
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -684,8 +684,8 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                       padding: '4px 10px',
                       borderRadius: 99,
                       background: '#fff',
-                      border: `1px solid ${clickedEx === ex ? 'rgba(124,58,237,0.5)' : 'rgba(0,0,0,0.1)'}`,
-                      color: clickedEx === ex ? '#7c3aed' : 'rgba(15,15,17,0.5)',
+                      border: `1px solid ${clickedEx === ex ? 'rgba(79,70,229,0.5)' : 'rgba(0,0,0,0.1)'}`,
+                      color: clickedEx === ex ? '#4f46e5' : 'rgba(15,15,17,0.5)',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
                       boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
@@ -693,8 +693,8 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                     }}
                     onMouseEnter={e => {
                       if (clickedEx !== ex) {
-                        e.currentTarget.style.borderColor = 'rgba(124,58,237,0.4)'
-                        e.currentTarget.style.color = '#7c3aed'
+                        e.currentTarget.style.borderColor = 'rgba(79,70,229,0.4)'
+                        e.currentTarget.style.color = '#4f46e5'
                       }
                     }}
                     onMouseLeave={e => {
@@ -728,9 +728,9 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
 
       {/* ── How it works ── */}
       <section style={{
-        borderTop: '1px solid rgba(0,0,0,0.07)',
+        borderTop: '1px solid rgba(255,255,255,0.08)',
         padding: '56px 24px',
-        background: '#fff',
+        background: '#080d1a',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p style={{
@@ -738,7 +738,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: '0.1em',
-            color: 'rgba(15,15,17,0.35)',
+            color: 'rgba(232,234,240,0.4)',
             textTransform: 'uppercase',
             marginBottom: 8,
           }}>
@@ -748,7 +748,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
             textAlign: 'center',
             fontSize: 'clamp(1.4rem, 3vw, 2rem)',
             fontWeight: 800,
-            color: '#0f0f11',
+            color: '#e8eaf0',
             letterSpacing: '-0.025em',
             marginBottom: 40,
           }}>
@@ -771,15 +771,15 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 style={{
                   borderRadius: 14,
                   padding: '20px 20px',
-                  background: '#fafafa',
-                  border: '1px solid rgba(0,0,0,0.08)',
+                  background: '#0f172a',
+                  border: '1px solid rgba(255,255,255,0.08)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                   <span className="step-badge">{step.num}</span>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#0f0f11', marginBottom: 5 }}>{step.label}</div>
-                <div style={{ fontSize: 12, color: 'rgba(15,15,17,0.5)', lineHeight: 1.6 }}>{step.desc}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#e8eaf0', marginBottom: 5 }}>{step.label}</div>
+                <div style={{ fontSize: 12, color: 'rgba(232,234,240,0.6)', lineHeight: 1.6 }}>{step.desc}</div>
               </motion.div>
             ))}
           </div>
@@ -787,7 +787,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
       </section>
 
       {/* ── AI-native differentiators ── */}
-      <section style={{ borderTop: '1px solid rgba(0,0,0,0.07)', padding: '56px 24px', background: '#fafafa' }}>
+      <section style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '56px 24px', background: '#0f172a' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p style={{
             textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
@@ -797,12 +797,12 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
           </p>
           <h2 style={{
             textAlign: 'center', fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 800,
-            color: '#0f0f11', letterSpacing: '-0.025em', marginBottom: 12,
+            color: '#e8eaf0', letterSpacing: '-0.025em', marginBottom: 12,
           }}>
             What no other prototyper does
           </h2>
           <p style={{
-            textAlign: 'center', fontSize: 14, color: 'rgba(15,15,17,0.45)',
+            textAlign: 'center', fontSize: 14, color: 'rgba(232,234,240,0.5)',
             maxWidth: 560, margin: '0 auto 40px',
           }}>
             Other tools make pretty screens. ProtoForge makes prototypes your AI tools can actually read, use, and build on.
@@ -819,20 +819,20 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 style={{
                   borderRadius: 14,
                   padding: '20px 18px',
-                  background: '#fff',
-                  border: `1px solid ${f.badgeColor}22`,
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                  background: '#080d1a',
+                  border: `1px solid ${f.badgeColor}33`,
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <span style={{ fontSize: 22 }}>{f.icon}</span>
                   <span style={{
                     fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 99,
-                    background: `${f.badgeColor}14`, color: f.badgeColor, letterSpacing: '0.06em',
+                    background: `${f.badgeColor}22`, color: f.badgeColor, letterSpacing: '0.06em',
                   }}>{f.badge}</span>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#0f0f11', marginBottom: 6 }}>{f.label}</div>
-                <div style={{ fontSize: 12, color: 'rgba(15,15,17,0.5)', lineHeight: 1.6 }}>{f.desc}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#e8eaf0', marginBottom: 6 }}>{f.label}</div>
+                <div style={{ fontSize: 12, color: 'rgba(232,234,240,0.6)', lineHeight: 1.6 }}>{f.desc}</div>
               </motion.div>
             ))}
           </div>
@@ -841,34 +841,34 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
 
       {/* ── Footer ── */}
       <footer style={{
-        borderTop: '1px solid rgba(0,0,0,0.07)',
+        borderTop: '1px solid rgba(255,255,255,0.08)',
         padding: '20px 24px',
-        background: '#fff',
+        background: '#080d1a',
       }}>
         <div style={{
           maxWidth: 1100, margin: '0 auto',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8,
-          fontSize: 11, color: 'rgba(15,15,17,0.5)',
+          fontSize: 11, color: 'rgba(232,234,240,0.6)',
         }}>
           <span>{'© '}{new Date().getFullYear()}{' ProtoForge · Prototype fast, build smarter'}</span>
           <nav aria-label="Footer" style={{ display: 'flex', gap: 16 }}>
-            <a href="/privacy" style={{ color: 'rgba(15,15,17,0.5)', textDecoration: 'none' }}>Privacy</a>
-            <a href="/terms" style={{ color: 'rgba(15,15,17,0.5)', textDecoration: 'none' }}>Terms</a>
+            <a href="/privacy" style={{ color: 'rgba(232,234,240,0.6)', textDecoration: 'none' }}>Privacy</a>
+            <a href="/terms" style={{ color: 'rgba(232,234,240,0.6)', textDecoration: 'none' }}>Terms</a>
           </nav>
         </div>
       </footer>
 
       <style>{`
         :root {
-          --accent: #7c3aed;
-          --accent-subtle: rgba(124,58,237,0.08);
-          --accent-border: rgba(124,58,237,0.18);
-          --fg: #0f0f11;
-          --fg-muted: rgba(15,15,17,0.5);
-          --fg-faint: rgba(15,15,17,0.35);
-          --bg-page: #fafafa;
+          --accent: #4f46e5;
+          --accent-subtle: rgba(79,70,229,0.12);
+          --accent-border: rgba(79,70,229,0.3);
+          --fg: #e8eaf0;
+          --fg-muted: rgba(232,234,240,0.6);
+          --fg-faint: rgba(232,234,240,0.4);
+          --bg-page: #080d1a;
           --bg-surface: #fff;
-          --border: rgba(0,0,0,0.08);
+          --border: rgba(255,255,255,0.08);
           --success: #059669;
           --radius-sm: 6px;
           --radius-md: 8px;

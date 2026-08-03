@@ -14,7 +14,7 @@ export default function Navbar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{
             width: 28, height: 28, borderRadius: 8,
-            background: '#7c3aed',
+            background: '#4f46e5',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           }}>
@@ -29,9 +29,9 @@ export default function Navbar() {
             fontSize: 15,
             fontWeight: 900,
             letterSpacing: '-0.02em',
-            color: '#0f0f11',
+            color: '#e8eaf0',
           }}>
-            Proto<span style={{ color: '#7c3aed' }}>Forge</span>
+            Proto<span style={{ color: '#818cf8' }}>Forge</span>
           </span>
         </div>
 
@@ -41,9 +41,9 @@ export default function Navbar() {
             fontWeight: 700,
             padding: '3px 10px',
             borderRadius: 99,
-            background: 'rgba(124,58,237,0.09)',
-            border: '1px solid rgba(124,58,237,0.2)',
-            color: '#7c3aed',
+            background: 'rgba(79,70,229,0.14)',
+            border: '1px solid rgba(79,70,229,0.3)',
+            color: '#818cf8',
             letterSpacing: '0.04em',
           }}>
             FREE
@@ -55,7 +55,7 @@ export default function Navbar() {
               fontWeight: 700,
               padding: '7px 16px',
               borderRadius: 10,
-              background: '#7c3aed',
+              background: '#4f46e5',
               border: 'none',
               color: '#fff',
               cursor: 'pointer',

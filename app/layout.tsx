@@ -55,8 +55,8 @@ export default function RootLayout({
         </div>
 
         <FloatingChatWrapper />
-        <FeedbackWidget siteName="ProtoForge" accentColor="#7c3aed" accentColor2="#6d28d9" position="left" />
-        <BackToTop accentColor="#7c3aed" />
+        <FeedbackWidget siteName="ProtoForge" accentColor="#4f46e5" accentColor2="#4338ca" position="left" />
+        <BackToTop accentColor="#4f46e5" />
       </body>
     </html>
   );
