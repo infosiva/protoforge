@@ -466,7 +466,7 @@ function HeroArea({ spec, theme, page }: { spec: ProtoSpec; theme: Theme; page: 
       </div>
       {/* metric strip */}
       <div style={{ display: 'flex', gap: 40, marginTop: 56, paddingTop: 32, borderTop: `1px solid ${theme.border}` }}>
-        {['50k+ users','99.9% uptime','4.9★ rating'].map(m => (
+        {['Fast setup','No credit card','Cancel anytime'].map(m => (
           <div key={m} style={{ fontSize: '0.85rem', color: theme.muted }}>{m}</div>
         ))}
       </div>
