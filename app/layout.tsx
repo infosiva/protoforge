@@ -55,6 +55,7 @@ export default function RootLayout({
         </div>
 
         <FloatingChatWrapper />
+        <Script defer data-site="protofast.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
         <FeedbackWidget siteName="ProtoForge" accentColor="#4f46e5" accentColor2="#4338ca" position="left" />
         <BackToTop accentColor="#4f46e5" />
       </body>
