@@ -6,6 +6,7 @@ import BackToTop from '@/components/BackToTop'
 import Navbar from '@/components/Navbar'
 import Script from 'next/script'
 import { ThemeLoader } from '@/lib/theme-loader-client'
+import { getSiteFlags } from '@/lib/flags'
 
 export const metadata: Metadata = {
   title: "ProtoForge — Idea to Prototype in Seconds | AI Prototype Generator",
@@ -23,11 +24,12 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "ProtoForge — Idea to Prototype in Seconds", description: "Idea to prototype in seconds. Free AI prototype generator.", images: ['/og.png'] },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const flags = await getSiteFlags('protoforge')
   return (
     <html lang="en" className="h-full">
       <head>
@@ -60,7 +62,7 @@ export default function RootLayout({
           {children}
         </div>
 
-        <FloatingChatWrapper />
+        {flags.chatbot && <FloatingChatWrapper />}
         <Script defer data-site="protofast.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
         <FeedbackWidget siteName="ProtoForge" accentColor="#4f46e5" accentColor2="#4338ca" position="left" />
         <BackToTop accentColor="#4f46e5" />
