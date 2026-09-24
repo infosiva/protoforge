@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const { messages, system } = await req.json()
     const sysPrompt = system ?? 'You are ProtoForge AI — a rapid prototyping and product design expert. Help users go from idea to prototype: wireframes, user flows, MVP features, tech stack choices. Be concise and practical.'
     const res = await groq().chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+      model: 'qwen/qwen3.8-27b',
       messages: [{ role: 'system', content: sysPrompt }, ...messages],
       max_tokens: 500,
     })

@@ -11,7 +11,7 @@ function getGroq(): Groq {
 
 async function compressIdeaToDNA(idea: string, category: string, referenceStyle: string): Promise<{ dna: string; compressionTokens: number }> {
   const res = await getGroq().chat.completions.create({
-    model: 'llama-3.3-70b-versatile',
+    model: 'qwen/qwen3.8-27b',
     messages: [{
       role: 'user',
       content: `Compress into 40-token product DNA. Output ONLY the string, no explanation.\nFormat: "[Type]|[User]|[Problem]|[Differentiator]|[Tone]"\nIdea: "${idea}" | Category: ${category} | Style: ${referenceStyle}`,
@@ -258,7 +258,7 @@ Generate a complete 5-page website prototype spec. Return ONLY valid JSON, no ma
 Make all copy specific to the DNA above. Every item must be relevant to this specific product. Do NOT use placeholder text.`
 
   const response = await getGroq().chat.completions.create({
-    model: 'llama-3.3-70b-versatile',
+    model: 'openai/gpt-oss-120b',
     messages: [{ role: 'user', content: prompt }],
     max_tokens: 3000,
     temperature: 0.7,
