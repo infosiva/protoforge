@@ -11,6 +11,7 @@
 //   />
 
 import { useState, useRef, useEffect } from 'react'
+import { MagneticButton } from "@infosiva/shared-ui/modern";
 
 export type GammaPromptCardProps = {
   label: string
@@ -152,7 +153,7 @@ export default function GammaPromptCard({
             className="px-6 py-4 flex items-center justify-between border-t border-gray-100"
           >
             <span className="text-xs text-gray-400">⌘ + Enter to generate</span>
-            <button
+            <MagneticButton
               type="submit"
               disabled={!prompt.trim() || loading}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40"
@@ -180,7 +181,7 @@ export default function GammaPromptCard({
                   </svg>
                 </>
               )}
-            </button>
+            </MagneticButton>
           </div>
         </form>
 

@@ -8,6 +8,7 @@ import Script from 'next/script'
 import { ThemeLoader } from '@/lib/theme-loader-client'
 import { getSiteFlags } from '@/lib/flags'
 
+import { MotionProvider } from "@infosiva/shared-ui/modern";
 export const metadata: Metadata = {
   title: "ProtoForge — Idea to Prototype in Seconds | AI Prototype Generator",
   description: "Describe your idea. Get a branded 5-page prototype with real copy, colors, and layout — instantly. Free, no signup required.",
@@ -59,7 +60,7 @@ export default async function RootLayout({
         <ThemeLoader />
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Navbar />
-          {children}
+          <MotionProvider>{children}</MotionProvider>
         </div>
 
         {flags.chatbot && <FloatingChatWrapper />}
