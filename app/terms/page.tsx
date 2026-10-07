@@ -4,8 +4,8 @@ export const metadata = { title: 'Terms of Use — ProtoForge', description: 'Te
 
 export default function TermsPage() {
   return (
-    <main style={{ maxWidth: 680, margin: '0 auto', padding: '60px 24px 80px', fontFamily: 'inherit', color: '#e8eaf0', background: '#080d1a' }}>
-      <Link href="/" style={{ fontSize: 13, color: '#818cf8', textDecoration: 'none', display: 'inline-block', marginBottom: 32 }}>
+    <main style={{ maxWidth: 680, margin: '0 auto', padding: '60px 24px 80px', fontFamily: 'inherit', color: '#e8eaf0', background: 'var(--bg)' }}>
+      <Link href="/" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none', display: 'inline-block', marginBottom: 32 }}>
         ← Back to ProtoForge
       </Link>
       <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: 8, letterSpacing: '-0.02em' }}>Terms of Use</h1>
@@ -31,7 +31,7 @@ export default function TermsPage() {
       </p>
 
       <p style={{ fontSize: 13, color: 'rgba(232,234,240,0.5)', marginTop: 48 }}>
-        Questions? Contact us at <a href="mailto:hello@protofast.app" style={{ color: '#818cf8' }}>hello@protofast.app</a>
+        Questions? Contact us at <a href="mailto:hello@protofast.app" style={{ color: 'var(--accent)' }}>hello@protofast.app</a>
       </p>
     </main>
   )

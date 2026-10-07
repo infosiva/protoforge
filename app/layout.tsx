@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./theme-vars.css";
 import FloatingChatWrapper from '@/components/FloatingChatWrapper'
 import FeedbackWidget from '@/components/FeedbackWidget'
 import BackToTop from '@/components/BackToTop'
 import Navbar from '@/components/Navbar'
 import Script from 'next/script'
-import { ThemeLoader } from '@/lib/theme-loader-client'
+import { loadSiteTheme, buildThemeStyleTag, buildGa4Snippet, isValidGa4Id } from '@/lib/theme-loader'
+import { AnimatedBg } from '@/components/AnimatedBg'
+import { Telemetry } from '@/components/Telemetry'
+import CookieConsent from '@/components/CookieConsent'
 import { getSiteFlags } from '@/lib/flags'
 
 import { MotionProvider } from "@infosiva/shared-ui/modern";
@@ -25,15 +29,24 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "ProtoForge — Idea to Prototype in Seconds", description: "Idea to prototype in seconds. Free AI prototype generator.", images: ['/og.png'] },
 };
 
+const DEFAULT_ACCENT = '#818cf8'
+const DEFAULT_BG = '#0c0a1f'
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const flags = await getSiteFlags('protoforge')
+  const theme = await loadSiteTheme('protoforge')
+  const accent = theme?.primary ?? DEFAULT_ACCENT
+  const archetype = theme?.layout?.archetype ?? 'directory-marketplace'
+  const ga4 = buildGa4Snippet(theme)
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" data-layout={archetype}>
       <head>
+        <style dangerouslySetInnerHTML={{ __html: buildThemeStyleTag(theme, { background: DEFAULT_BG, primary: DEFAULT_ACCENT }) }} />
+        {ga4 && <script dangerouslySetInnerHTML={{ __html: ga4 }} />}
         <meta name="google-adsense-account" content="ca-pub-4237294630161176" />
         <Script
                   async
@@ -57,16 +70,18 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full antialiased">
-        <ThemeLoader />
+        <AnimatedBg theme={theme} />
+        {isValidGa4Id(theme?.analytics?.ga4Id) && <Script src={`https://www.googletagmanager.com/gtag/js?id=${theme?.analytics?.ga4Id}`} strategy="afterInteractive" />}
+        <Telemetry archetype={archetype} />
         <div style={{ position: 'relative', zIndex: 2 }}>
           <Navbar />
           <MotionProvider>{children}</MotionProvider>
         </div>
 
         {flags.chatbot && <FloatingChatWrapper />}
-        <Script defer data-site="protofast.app" src="http://31.97.56.148:3098/t.js" strategy="afterInteractive" />
-        <FeedbackWidget siteName="ProtoForge" accentColor="#4f46e5" accentColor2="#4338ca" position="left" />
-        <BackToTop accentColor="#4f46e5" />
+        <FeedbackWidget siteName="ProtoForge" accentColor={accent} accentColor2={theme?.secondary ?? accent} position="left" />
+        <BackToTop accentColor={accent} />
+        <CookieConsent />
       </body>
     </html>
   );

@@ -64,7 +64,7 @@ Be specific, practical, opinionated. No fluff.`,
       placeholder="MVP for a B2B SaaS invoicing tool — React, Supabase, solo founder, 4-week build..."
       onSubmit={handlePrompt}
       bgGradient="linear-gradient(135deg, #0b1120 0%, #0f1a35 50%, #080d1a 100%)"
-      accentColor="#6366f1"
+      accentColor='var(--accent)'
       suggestions={SUGGESTIONS}
       outputSlot={
         error ? (

@@ -1,16 +1,7 @@
+// Removed insecure http:// stats fetch (31.97.56.148:3099). No fake numbers: visitors stays null until a https source exists.
 export const runtime = 'edge'
 export const revalidate = 3600
 
 export async function GET() {
-  try {
-    const res = await fetch('http://31.97.56.148:3099/api/stats?site=protofast.app', {
-      next: { revalidate: 3600 },
-    })
-    if (!res.ok) return Response.json({ visitors: null }, { status: 200 })
-    const data = await res.json()
-    return Response.json(data)
-  } catch (e) {
-    console.error('[protoforge][stats]', e)
-    return Response.json({ visitors: null }, { status: 200 })
-  }
+  return Response.json({ visitors: null }, { status: 200 })
 }

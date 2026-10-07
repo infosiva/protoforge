@@ -99,8 +99,8 @@ export default function ProjectsDashboard() {
         style={{
           marginTop: 28,
           padding: '16px 18px',
-          background: 'rgba(99,102,241,0.06)',
-          border: '1px dashed rgba(99,102,241,0.25)',
+          background: 'color-mix(in oklab, var(--accent) 6%, transparent)',
+          border: '1px dashed color-mix(in oklab, var(--accent) 25%, transparent)',
           borderRadius: 12,
           textAlign: 'center',
         }}
@@ -108,7 +108,7 @@ export default function ProjectsDashboard() {
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
           No prototypes yet
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(99,102,241,0.7)', fontWeight: 600 }}>
+        <div style={{ fontSize: 11, color: 'color-mix(in oklab, var(--accent) 70%, transparent)', fontWeight: 600 }}>
           Build your first prototype above →
         </div>
       </motion.div>
@@ -153,7 +153,7 @@ export default function ProjectsDashboard() {
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: 0.15 + i * 0.07, ease: [0.23, 1, 0.32, 1] }}
-              whileHover={{ y: -2, boxShadow: '0 4px 20px rgba(99,102,241,0.15)' }}
+              whileHover={{ y: -2, boxShadow: '0 4px 20px color-mix(in oklab, var(--accent) 15%, transparent)' }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -181,15 +181,15 @@ export default function ProjectsDashboard() {
                   fontWeight: 700,
                   padding: '4px 10px',
                   borderRadius: 99,
-                  background: 'rgba(99,102,241,0.12)',
-                  border: '1px solid rgba(99,102,241,0.25)',
+                  background: 'color-mix(in oklab, var(--accent) 12%, transparent)',
+                  border: '1px solid color-mix(in oklab, var(--accent) 25%, transparent)',
                   color: '#a5b4fc',
                   textDecoration: 'none',
                   flexShrink: 0,
                   transition: 'background 160ms',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(99,102,241,0.22)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(99,102,241,0.12)')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in oklab, var(--accent) 22%, transparent)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'color-mix(in oklab, var(--accent) 12%, transparent)')}
               >
                 Open
               </motion.a>

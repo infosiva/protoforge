@@ -433,7 +433,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
   const layoutHint = useLayoutHint(idea)
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#080d1a' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg)' }}>
 
       {/* ── Hero: split 2-col ── */}
       <main style={{ flex: 1, position: 'relative', zIndex: 1 }}>
@@ -507,7 +507,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
             {/* Feature pills */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
               {[
-                { label: '⚡ Instant results', color: '#4f46e5' },
+                { label: '⚡ Instant results', color: 'var(--accent)' },
                 { label: '🎨 Branded design', color: '#0284c7' },
                 { label: '📱 Mobile-first', color: '#0d9488' },
                 { label: '🤖 AI-powered', color: '#ea580c' },
@@ -684,8 +684,8 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                       padding: '4px 10px',
                       borderRadius: 99,
                       background: '#fff',
-                      border: `1px solid ${clickedEx === ex ? 'rgba(79,70,229,0.5)' : 'rgba(0,0,0,0.1)'}`,
-                      color: clickedEx === ex ? '#4f46e5' : 'rgba(15,15,17,0.5)',
+                      border: `1px solid ${clickedEx === ex ? 'color-mix(in oklab, var(--accent) 50%, transparent)' : 'rgba(0,0,0,0.1)'}`,
+                      color: clickedEx === ex ? 'var(--accent)' : 'rgba(15,15,17,0.5)',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
                       boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
@@ -693,8 +693,8 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                     }}
                     onMouseEnter={e => {
                       if (clickedEx !== ex) {
-                        e.currentTarget.style.borderColor = 'rgba(79,70,229,0.4)'
-                        e.currentTarget.style.color = '#4f46e5'
+                        e.currentTarget.style.borderColor = 'color-mix(in oklab, var(--accent) 40%, transparent)'
+                        e.currentTarget.style.color = 'var(--accent)'
                       }
                     }}
                     onMouseLeave={e => {
@@ -730,7 +730,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
       <section style={{
         borderTop: '1px solid rgba(255,255,255,0.08)',
         padding: '56px 24px',
-        background: '#080d1a',
+        background: 'transparent',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p style={{
@@ -787,7 +787,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
       </section>
 
       {/* ── AI-native differentiators ── */}
-      <section style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '56px 24px', background: '#0f172a' }}>
+      <section style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '56px 24px', background: 'color-mix(in oklab, var(--bg) 70%, transparent)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <p style={{
             textAlign: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
@@ -819,7 +819,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
                 style={{
                   borderRadius: 14,
                   padding: '20px 18px',
-                  background: '#080d1a',
+                  background: 'var(--bg)',
                   border: `1px solid ${f.badgeColor}33`,
                   boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
                 }}
@@ -843,7 +843,7 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
       <footer style={{
         borderTop: '1px solid rgba(255,255,255,0.08)',
         padding: '20px 24px',
-        background: '#080d1a',
+        background: 'var(--bg)',
       }}>
         <div style={{
           maxWidth: 1100, margin: '0 auto',
@@ -860,13 +860,11 @@ export default function ProtoForgePage({ overrides = {} }: { overrides?: Content
 
       <style>{`
         :root {
-          --accent: #4f46e5;
-          --accent-subtle: rgba(79,70,229,0.12);
-          --accent-border: rgba(79,70,229,0.3);
-          --fg: #e8eaf0;
-          --fg-muted: rgba(232,234,240,0.6);
+                    --accent-subtle: color-mix(in oklab, var(--accent) 12%, transparent);
+          --accent-border: color-mix(in oklab, var(--accent) 30%, transparent);
+                    --fg-muted: rgba(232,234,240,0.6);
           --fg-faint: rgba(232,234,240,0.4);
-          --bg-page: #080d1a;
+          --bg-page: var(--bg);
           --bg-surface: #fff;
           --border: rgba(255,255,255,0.08);
           --success: #059669;

@@ -1,6 +1,5 @@
 import { get } from "@vercel/edge-config";
 import { unstable_cache } from "next/cache";
-import { getLayoutById } from "./layoutSystem";
 
 export interface SiteWidgets {
   chatbot?: boolean;
@@ -16,6 +15,14 @@ export interface SiteWidgets {
 export interface SiteLayout {
   hideSections?: string[];
   heroVariant?: "split" | "centered" | "minimal";
+  archetype?: string; // id from design-system/layout-archetypes.ts; wins over auto pick
+  bgAnimation?: "none" | "aurora" | "mesh" | "dotgrid" | "gradient-shift";
+  bgSpeed?: number; // 1-10
+}
+
+/** Per-site tracking. Off until ga4Id is set. Hub-editable, no code change. */
+export interface SiteAnalytics {
+  ga4Id?: string; // G-XXXXXXXXXX
 }
 
 export interface SiteCopy {
@@ -30,7 +37,18 @@ export interface SiteFont {
   body?: string;
 }
 
+/** Hub-editable design-system overrides (delta only). Defaults live in design-system/tokens. */
+export interface SiteDesign {
+  dials?: { variance?: number; motion?: number; density?: number }; // 1-10
+  radius?: string;
+  paletteShared?: boolean; // owner explicitly allows a non-unique accent
+  templateOk?: boolean; // owner explicitly allows the stock template look
+  brief?: string; // extra prompt text appended to UI tasks for this site
+}
+
 export interface SiteTheme {
+  design?: SiteDesign;
+  analytics?: SiteAnalytics;
   background?: string;
   primary?: string;
   secondary?: string;
@@ -39,7 +57,6 @@ export interface SiteTheme {
   layout?: SiteLayout;
   copy?: SiteCopy;
   font?: SiteFont;
-  layoutId?: string;   // 'T1' … 'T17' — hub-controlled, overrides background/primary if set
 }
 
 /**
@@ -68,13 +85,9 @@ export function buildThemeStyleTag(theme: SiteTheme | null, defaults?: {
   primary?: string;
   secondary?: string;
 }): string {
-  // layoutId (hub-controlled, T1-T17) takes priority over explicit background/primary —
-  // lets hub flip a project's whole look with zero code changes.
-  const layout = theme?.layoutId ? getLayoutById(theme.layoutId) : undefined;
-
-  const bg  = layout?.bg     ?? theme?.background ?? defaults?.background;
-  const pri = layout?.accent ?? theme?.primary    ?? defaults?.primary;
-  const sec = layout?.accent2 ?? theme?.secondary  ?? defaults?.secondary;
+  const bg  = theme?.background ?? defaults?.background;
+  const pri = theme?.primary    ?? defaults?.primary;
+  const sec = theme?.secondary  ?? defaults?.secondary;
 
   const vars: string[] = [];
   if (bg)  vars.push(`--background: ${bg}; --theme-base: ${bg};`);
@@ -86,7 +99,7 @@ export function buildThemeStyleTag(theme: SiteTheme | null, defaults?: {
   const bodyFont    = theme?.font?.body;
 
   const rules: string[] = [];
-  if (vars.length > 0) rules.push(`:root { ${vars.join(" ")} }`);
+  if (vars.length > 0) rules.push(`:root:root { ${vars.join(" ")} }`);
   if (headingFont) rules.push(`h1,h2,h3,.display { font-family: '${headingFont}', sans-serif !important; }`);
   if (bodyFont)    rules.push(`body { font-family: '${bodyFont}', system-ui, sans-serif !important; }`);
 
@@ -113,4 +126,18 @@ export function isSectionHidden(theme: SiteTheme | null, sectionId: string): boo
  */
 export function getCopy(theme: SiteTheme | null, key: keyof SiteCopy, fallback: string): string {
   return theme?.copy?.[key] ?? fallback;
+}
+
+const GA4_RE = /^G-[A-Z0-9]{6,12}$/;
+export const isValidGa4Id = (id?: string) => !!id && GA4_RE.test(id);
+
+/**
+ * GA4 bootstrap (inline script) or "" when no valid id. Anonymised IP, consent-denied by default
+ * until the site's cookie consent calls gtag('consent','update',{analytics_storage:'granted'}).
+ * Usage events: window.gtag?.('event','layout_view',{archetype}) — anonymous only, no personal data.
+ */
+export function buildGa4Snippet(theme: SiteTheme | null): string {
+  const id = theme?.analytics?.ga4Id;
+  if (!isValidGa4Id(id)) return "";
+  return `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied'});gtag('js',new Date());gtag('config','${id}',{anonymize_ip:true});`;
 }
